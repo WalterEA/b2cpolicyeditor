@@ -24,10 +24,5 @@ namespace B2CPolicyEditor.Views
         {
             InitializeComponent();
         }
-        public ConfigureAADIdP(Models.IdPSpec spec)
-        {
-            InitializeComponent();
-            //DataContext = new ViewModels.AADIdP(spec);
-        }
     }
 }

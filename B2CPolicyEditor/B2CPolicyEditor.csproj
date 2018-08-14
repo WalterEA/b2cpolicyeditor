@@ -82,9 +82,7 @@
     <Compile Include="Extensions\TreeViewHelper.cs" />
     <Compile Include="FileCache.cs" />
     <Compile Include="Models\Constants.cs" />
-    <Compile Include="Models\IdPSpec.cs" />
     <Compile Include="Models\PolicySet.cs" />
-    <Compile Include="Models\UserJourney.cs" />
     <Compile Include="Utilities\GraphHelper.cs" />
     <Compile Include="ViewModels\AddIdPWizard.cs" />
     <Compile Include="ViewModels\Claims.cs" />
@@ -100,7 +98,6 @@
     <Compile Include="ViewModels\SocialIdP.cs" />
     <Compile Include="ViewModels\TechnicalProfileClaims.cs" />
     <Compile Include="ViewModels\TokenEditor.cs" />
-    <Compile Include="ViewModels\TokenIssuers.cs" />
     <Compile Include="Views\AADIdP.xaml.cs">
       <DependentUpon>AADIdP.xaml</DependentUpon>
     </Compile>

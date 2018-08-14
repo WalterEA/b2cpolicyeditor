@@ -108,8 +108,7 @@ namespace B2CPolicyEditor.ViewModels
                             .Elements(Constants.dflt + "TechnicalProfiles")
                                 .Elements(Constants.dflt + "TechnicalProfile").FirstOrDefault(p => p.Attribute("Id").Value == _SelectedExchange.Name);
                 ClaimsUsage = new TechnicalProfileClaims(tp);
-                throw new ApplicationException("Dummy. Prevents ListBox from keeping record of selection this is called every time it is selected");
-            }
+                throw new ApplicationException("Ignore this exception. HAck till I figure out how to keep ietms unselected in the listbox.");
         }
     }
 
