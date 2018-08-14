@@ -1,0 +1,39 @@
+﻿<ClaimsProvider xmlns="http://schemas.microsoft.com/online/cpim/schemas/2013/06">
+  <Domain>Contoso</Domain>
+  <DisplayName>Login using Contoso</DisplayName>
+  <TechnicalProfiles>
+    <TechnicalProfile Id="ContosoProfile">
+      <DisplayName>Contoso Employee</DisplayName>
+      <Description>Login with your Contoso account</Description>
+      <Protocol Name="OpenIdConnect"/>
+      <OutputTokenFormat>JWT</OutputTokenFormat>
+      <Metadata>
+        <Item Key="METADATA">https://login.windows.net/contoso.com/.well-known/openid-configuration</Item>
+        <Item Key="ProviderName">https://sts.windows.net/00000000-0000-0000-0000-000000000000/</Item>
+        <Item Key="client_id">00000000-0000-0000-0000-000000000000</Item>
+        <Item Key="IdTokenAudience">00000000-0000-0000-0000-000000000000</Item>
+        <Item Key="response_types">id_token</Item>
+        <Item Key="UsePolicyInRedirectUri">false</Item>
+      </Metadata>
+      <CryptographicKeys>
+        <Key Id="client_secret" StorageReferenceId="B2C_1A_ContosoAppSecret"/>
+      </CryptographicKeys>
+      <OutputClaims>
+        <OutputClaim ClaimTypeReferenceId="socialIdpUserId" PartnerClaimType="oid"/>
+        <OutputClaim ClaimTypeReferenceId="tenantId" PartnerClaimType="tid"/>
+        <OutputClaim ClaimTypeReferenceId="givenName" PartnerClaimType="given_name" />
+        <OutputClaim ClaimTypeReferenceId="surName" PartnerClaimType="family_name" />
+        <OutputClaim ClaimTypeReferenceId="displayName" PartnerClaimType="name" />
+        <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="socialIdpAuthentication" />
+        <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="AzureADContoso" />
+      </OutputClaims>
+      <OutputClaimsTransformations>
+        <OutputClaimsTransformation ReferenceId="CreateRandomUPNUserName"/>
+        <OutputClaimsTransformation ReferenceId="CreateUserPrincipalName"/>
+        <OutputClaimsTransformation ReferenceId="CreateAlternativeSecurityId"/>
+        <OutputClaimsTransformation ReferenceId="CreateSubjectClaimFromAlternativeSecurityId"/>
+      </OutputClaimsTransformations>
+      <UseTechnicalProfileForSessionManagement ReferenceId="SM-Noop"/>
+    </TechnicalProfile>
+  </TechnicalProfiles>
+</ClaimsProvider>

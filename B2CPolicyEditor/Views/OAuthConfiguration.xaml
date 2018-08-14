@@ -1,0 +1,43 @@
+﻿<Page x:Class="B2CPolicyEditor.Views.OAuthConfiguration"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:B2CPolicyEditor.Views"
+      mc:Ignorable="d" 
+      d:DesignHeight="300" d:DesignWidth="300"
+      Title="OAuthConfiguration">
+
+    <Grid>
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Text="Display name" />
+            <TextBlock Grid.Row="1" Text="Domain name" />
+            <TextBlock Grid.Row="2" Text="Provider name" />
+            <TextBlock Grid.Row="3" Text="Authorization endpoint" />
+            <TextBlock Grid.Row="4" Text="Token endpoint" />
+            <TextBlock Grid.Row="5" Text="Client id: " />
+            <TextBlock Grid.Row="6" Text="Secret name: " />
+
+            <TextBox Grid.Column="1" Grid.Row="0" Text="{Binding DisplayName}" />
+            <TextBox Grid.Column="1" Grid.Row="1" Text="{Binding DomainName}" />
+            <TextBox Grid.Column="1" Grid.Row="2" Width="200" Text="{Binding ProviderName}" />
+            <TextBox Grid.Column="1" Grid.Row="3" Text="{Binding AuthorizationEndpoint}" />
+            <TextBox Grid.Column="1" Grid.Row="4" Text="{Binding TokenEndpoint}" />
+            <TextBox Grid.Column="1" Grid.Row="5" Width="200" Text="{Binding ClientId}" />
+            <TextBox Grid.Column="1" Grid.Row="6" Text="{Binding SecretName}" />
+        </Grid>
+    </Grid>
+</Page>

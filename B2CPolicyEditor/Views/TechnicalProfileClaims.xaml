@@ -1,0 +1,65 @@
+﻿<UserControl x:Class="B2CPolicyEditor.Views.TechnicalProfileClaims"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:B2CPolicyEditor.Views"
+      xmlns:vms="clr-namespace:B2CPolicyEditor.ViewModels"
+      mc:Ignorable="d" 
+      d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <!--<Style TargetType="ComboBox" x:Key="ComboBoxDisplay">
+            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource Self}, Path=DataContext.AllClaims}"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+        </Style>
+        <Style TargetType="ComboBox" x:Key="ComboBoxEdit">
+            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource Self}, Path=DataContext.AllClaims}"/>
+            --><!--<Setter Property="DisplayMemberPath" Value="Id" />--><!--
+        </Style>-->
+        <Style TargetType="ComboBox" x:Key="ComboBoxDisplay">
+            <Setter Property="ItemsSource" Value="{x:Static vms:ClaimUsage.AllClaims}"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+        </Style>
+        <Style TargetType="ComboBox" x:Key="ComboBoxEdit">
+            <Setter Property="ItemsSource" Value="{x:Static vms:ClaimUsage.AllClaims}"/>
+            <!--<Setter Property="DisplayMemberPath" Value="Id" />-->
+        </Style>
+    </UserControl.Resources>
+
+    <TabControl>
+        <TabItem Header="Inputs">
+            <DataGrid Grid.Row="1" ItemsSource="{Binding InputClaims}" AutoGenerateColumns="False" >
+                <DataGrid.Columns>
+                    <DataGridComboBoxColumn Header="Name" SelectedItemBinding="{Binding Id}" 
+                                            ElementStyle="{StaticResource ComboBoxDisplay}" 
+                                            EditingElementStyle="{StaticResource ComboBoxEdit}"/>
+                    <DataGridTextColumn Binding="{Binding PartnerClaimType}" Header="Partner claim id" />
+                    <DataGridCheckBoxColumn Binding="{Binding IsRequired}" Header="Is required?"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </TabItem>
+        <TabItem Header="Outputs">
+            <DataGrid Grid.Row="4" ItemsSource="{Binding OutputClaims}" AutoGenerateColumns="False" >
+                <DataGrid.Columns>
+                    <DataGridComboBoxColumn Header="Name" SelectedItemBinding="{Binding Id}" 
+                                            ElementStyle="{StaticResource ComboBoxDisplay}" 
+                                            EditingElementStyle="{StaticResource ComboBoxEdit}"/>
+                    <DataGridTextColumn Binding="{Binding PartnerClaimType}" />
+                    <DataGridCheckBoxColumn Binding="{Binding IsRequired}" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </TabItem>
+        <TabItem Header="Persisted" Visibility="{Binding IsPersistedVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <DataGrid Grid.Row="7" ItemsSource="{Binding PersistedClaims}" AutoGenerateColumns="False" Visibility="{Binding IsPersistedVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <DataGrid.Columns>
+                    <DataGridComboBoxColumn Header="Name" SelectedItemBinding="{Binding Id}" 
+                                            ElementStyle="{StaticResource ComboBoxDisplay}" 
+                                            EditingElementStyle="{StaticResource ComboBoxEdit}"/>
+                    <DataGridTextColumn Binding="{Binding PartnerClaimType}" />
+                    <DataGridCheckBoxColumn Binding="{Binding IsRequired}" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </TabItem>
+    </TabControl>
+</UserControl>

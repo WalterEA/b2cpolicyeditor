@@ -1,0 +1,53 @@
+﻿<Page x:Class="B2CPolicyEditor.Views.PolicySetup"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:B2CPolicyEditor.Views"
+        mc:Ignorable="d"
+        Title="TenantSetup">
+    <Page.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </Page.Resources>
+    <Grid>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="6"/>                
+                <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto"  />
+                <RowDefinition  />
+            </Grid.RowDefinitions>
+            <TextBlock Text="Policy name prefix" />
+            <StackPanel Grid.Row="1">
+                <TextBlock TextWrapping="Wrap">B2C requires two application registrations. These will be created for you if they do not exist already.</TextBlock>
+                <Label>
+                    <Hyperlink NavigateUri="https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-get-started-custom#register-identity-experience-framework-applications">B2C internal applications</Hyperlink>
+                </Label>
+            </StackPanel>
+            <TextBlock Grid.Row="2">IEF app</TextBlock>
+            <TextBlock Grid.Row="4">IEF proxy app</TextBlock>
+            <TextBlock Grid.Row="6">AAD B2C Extension app id/obj id</TextBlock>
+            <GridSplitter Grid.Column="1" />
+
+            <TextBox Grid.Column="2" Grid.Row="0" Text="{Binding Name}" />
+            <TextBox Grid.Column="2" Grid.Row="2" Text="{Binding IEFAppName}" />
+            <TextBlock Grid.Column="2" Grid.Row="3" Text="{Binding IEFAppId}" />
+            <TextBox Grid.Column="2" Grid.Row="4" Text="{Binding IEFProxyAppName}" />
+            <TextBlock Grid.Column="2" Grid.Row="5" Text="{Binding IEFProxyAppId}" />
+            <TextBlock Grid.Column="2" Grid.Row="6" Text="{Binding ExtensionAppId}" />
+            <TextBlock Grid.Column="2" Grid.Row="7" Text="{Binding ExtensionObjId}" />
+
+            <Button Grid.Column="2" Grid.Row="8" Content="Configure B2C..." Command="{Binding VerifyB2CSetupCmd}" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="10" />
+        </Grid>
+  
+    </Grid>
+</Page>

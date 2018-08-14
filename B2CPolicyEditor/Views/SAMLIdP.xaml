@@ -1,0 +1,91 @@
+﻿<Page x:Class="B2CPolicyEditor.Views.SAMLIdP"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:B2CPolicyEditor.Views"
+      mc:Ignorable="d" 
+      d:DesignHeight="300" d:DesignWidth="300"
+      Title="SAMLIdP">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="6" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <GridSplitter Grid.Column="1" Grid.RowSpan="99" />
+        <TextBlock Grid.Row="0" Text="Domain name" />
+        <TextBlock Grid.Row="1" Text="Display name" />
+        <TextBlock Grid.Row="2" Text="Description" />        
+        <TextBlock Grid.Row="3" Text="Id" />
+        <TextBlock Grid.Row="4" Text="IdP metadata url" />
+        <!--<TextBlock Grid.Row="4" Text="Issuer URI" />-->
+        <TextBlock Grid.Row="5" Text="Requests must be signed" />
+        <!--<TextBlock Grid.Row="6" Text="Request signature algorithm" />-->
+        <!--<TextBlock Grid.Row="7" Text="Require signed assertions" />-->
+        <TextBlock Grid.Row="8" Text="Assertions must be encrypted" />
+        <TextBlock Grid.Row="9" Text="Assertions must be signed" />
+        <!--<TextBlock Grid.Row="10" Text="Enabled IdP initiated profile" />-->
+        <TextBlock Grid.Row="11" Text="Signature key names" />
+        <TextBlock Grid.Row="12" Text="Requests signing" />
+        <TextBlock Grid.Row="13" Text="Response signing" />
+        <!--<TextBlock Grid.Row="14" Text="Metadata signing" />-->
+        <!--<TextBlock Grid.Row="15" Text="Response assertion decryption" />-->
+
+        <TextBox Grid.Column="2" Grid.Row="0" Text="{Binding DomainName}" />
+        <TextBox Grid.Column="2" Grid.Row="1" Text="{Binding DisplayName}" />
+        <TextBox Grid.Column="2" Grid.Row="2" Text="{Binding Description}" />        
+        <TextBox Grid.Column="2" Grid.Row="3" Text="{Binding Id}" />
+        <TextBox Grid.Column="2" Grid.Row="4" Text="{Binding MetadataUrl}" />
+        <!--<TextBox Grid.Column="2" Grid.Row="4" Text="{Binding IssuerUri}" IsEnabled="false" />-->
+        <CheckBox Grid.Column="2" Grid.Row="5" IsChecked="{Binding RequestsSigned}" />
+        <!--<ComboBox Grid.Column="2" Grid.Row="6" IsEnabled="false">
+            <ComboBox.Items>
+                <TextBlock Text="Sha256" />
+                <TextBlock Text="Sha384" />
+                <TextBlock Text="Sha512" />
+                <TextBlock Text="Sha1" />
+            </ComboBox.Items>
+        </ComboBox>-->
+        <!--<CheckBox Grid.Column="2" Grid.Row="7" Checked="{Binding RequiredSignedAssertion}"  IsEnabled="false" />-->
+        <CheckBox Grid.Column="2" Grid.Row="8" IsChecked="{Binding WantsEncryptedAssertions}"  />
+        <CheckBox Grid.Column="2" Grid.Row="9" IsChecked="{Binding WantsSignedAssertions}" />
+        <!--<CheckBox Grid.Column="2" Grid.Row="10" IsChecked="{Binding EnableIdPInitiatedProfile}" IsEnabled="false"  />-->
+        <!--<TextBlock Grid.Column="2" Grid.Row="11" Text="Signature key names" />-->
+        <TextBox Grid.Column="2" Grid.Row="12" Text="{Binding SamlMessageSigning}" />
+        <TextBox Grid.Column="2" Grid.Row="13" Text="{Binding SamlAssertionSigning}" />
+        <!--<TextBox Grid.Column="2" Grid.Row="14" Text="{Binding SamlMetadataSigning}" IsEnabled="false"  />
+        <TextBox Grid.Column="2" Grid.Row="15" Text="{Binding SamlResponseAssertionDecryption}" IsEnabled="false" />-->
+        <TextBlock FontWeight="Bold" TextWrapping="Wrap" Text="Make sure that the correct incoming claim is used to set the socialIdpUserId in the journeys. For ADFS it is userPrincipalName." Grid.ColumnSpan="3" Grid.Row="15" />
+        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="This is unfinished work - some attributes may be incorrectly exposed or not exposed at all" FontSize="18" Opacity="0.3" Grid.RowSpan="20" Grid.ColumnSpan="4" RenderTransformOrigin="0.5,0.5">
+            <TextBlock.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="43.21"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </TextBlock.RenderTransform>
+
+        </TextBlock>
+    </Grid>
+</Page>

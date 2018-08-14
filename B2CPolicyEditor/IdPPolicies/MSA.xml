@@ -1,0 +1,37 @@
+﻿<ClaimsProvider xmlns="http://schemas.microsoft.com/online/cpim/schemas/2013/06">
+  <Domain>live.com</Domain>
+  <DisplayName>Microsoft Account</DisplayName>
+  <TechnicalProfiles>
+    <TechnicalProfile Id="MSA-OIDC">
+      <DisplayName>Microsoft Account</DisplayName>
+      <Protocol Name="OpenIdConnect" />
+      <Metadata>
+        <Item Key="ProviderName">https://login.live.com</Item>
+        <Item Key="METADATA">https://login.live.com/.well-known/openid-configuration</Item>
+        <Item Key="response_types">code</Item>
+        <Item Key="response_mode">form_post</Item>
+        <Item Key="scope">openid profile email</Item>
+        <Item Key="HttpBinding">POST</Item>
+        <Item Key="UsePolicyInRedirectUri">0</Item>
+        <Item Key="client_id">Your Microsoft application client id</Item>
+      </Metadata>
+      <CryptographicKeys>
+        <Key Id="client_secret" StorageReferenceId="B2C_1A_MSASecret" />
+      </CryptographicKeys>
+      <OutputClaims>
+        <OutputClaim ClaimTypeReferenceId="identityProvider" DefaultValue="live.com" />
+        <OutputClaim ClaimTypeReferenceId="authenticationSource" DefaultValue="socialIdpAuthentication" />
+        <OutputClaim ClaimTypeReferenceId="socialIdpUserId" PartnerClaimType="sub" />
+        <OutputClaim ClaimTypeReferenceId="displayName" PartnerClaimType="name" />
+        <OutputClaim ClaimTypeReferenceId="email" />
+      </OutputClaims>
+      <OutputClaimsTransformations>
+        <OutputClaimsTransformation ReferenceId="CreateRandomUPNUserName" />
+        <OutputClaimsTransformation ReferenceId="CreateUserPrincipalName" />
+        <OutputClaimsTransformation ReferenceId="CreateAlternativeSecurityId" />
+        <OutputClaimsTransformation ReferenceId="CreateSubjectClaimFromAlternativeSecurityId" />
+      </OutputClaimsTransformations>
+      <UseTechnicalProfileForSessionManagement ReferenceId="SM-SocialLogin" />
+    </TechnicalProfile>
+  </TechnicalProfiles>
+</ClaimsProvider>

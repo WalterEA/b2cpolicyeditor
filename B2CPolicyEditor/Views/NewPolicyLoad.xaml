@@ -1,0 +1,31 @@
+﻿<Window x:Class="B2CPolicyEditor.Views.NewPolicyLoad"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:B2CPolicyEditor.Views"
+        mc:Ignorable="d"
+        Title="Choose policy" Height="300" Width="300">
+    <Grid>
+        <StackPanel>
+            <GroupBox Header="Choose initial pattern" Margin="8">
+                <StackPanel>
+                    <RadioButton Content="Local accounts only" IsChecked="{Binding SelectLocal, Mode=TwoWay}" Tag="Local" />
+                    <RadioButton Content="Social (Facebook) only" IsChecked="{Binding SelectSocial, Mode=TwoWay}" Tag="SocialAccounts" />
+                    <RadioButton Content="Local and social (Facebook)" IsChecked="{Binding SelectLocalAndSocial, Mode=TwoWay}" Tag="SocialAndLocalAccounts" />
+                    <RadioButton Content="Local and social (Facebook) with MFA" IsChecked="{Binding SelectLocalAndSocialMFA, Mode=TwoWay}" Tag="SocialAndLocalAccountsWithMfa" />                    
+                </StackPanel>
+            </GroupBox>
+            <StackPanel Orientation="Horizontal" Margin="8">
+                <TextBlock Text="Project folder" Margin="0,0,4,0" />
+                <TextBox Text="{Binding PolicyFolder, Mode=TwoWay}" MinWidth="150" />
+                <Button Content="Browse..." Command="{Binding BrowseFolder}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="8">
+                <TextBlock Text="Policy name prefix" Margin="0,0,4,0" />
+                <TextBox Text="{Binding PolicyPrefix, Mode=TwoWay}" MinWidth="150" />
+            </StackPanel>            
+            <Button Content="Load" Command="{Binding Load}" HorizontalAlignment="Center"  Margin="8"/>
+        </StackPanel>
+    </Grid>
+</Window>
