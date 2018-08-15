@@ -43,7 +43,7 @@ namespace B2CPolicyEditor.ViewModels
             get { return _SelectLocal; }
             set
             {
-                if (Set(ref _SelectLocal, value))
+                if (Set(ref _SelectLocal, value) && value)
                     _selectedPattern = 0;
             }
         }
@@ -53,7 +53,7 @@ namespace B2CPolicyEditor.ViewModels
             get { return _SelectSocial; }
             set
             {
-                if (Set(ref _SelectSocial, value))
+                if (Set(ref _SelectSocial, value) && value)
                     _selectedPattern = 1;
             }
         }
@@ -63,7 +63,7 @@ namespace B2CPolicyEditor.ViewModels
             get { return _SelectLocalAndSocial; }
             set
             {
-                if (Set(ref _SelectLocalAndSocial, value))
+                if (Set(ref _SelectLocalAndSocial, value) && value)
                     _selectedPattern = 2;
             }
         }
@@ -74,7 +74,7 @@ namespace B2CPolicyEditor.ViewModels
             get { return _SelectLocalAndSocialMFA; }
             set
             {
-                if (Set(ref _SelectLocalAndSocialMFA, value))
+                if (Set(ref _SelectLocalAndSocialMFA, value) && value)
                     _selectedPattern = 3;
             }
         }
