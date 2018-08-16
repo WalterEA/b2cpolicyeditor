@@ -101,7 +101,24 @@ namespace B2CPolicyEditor.ViewModels
         public string InputType
         {
             get { return Source.Element(Constants.dflt + "UserInputType")?.Value; }
-            set { Source.SetElementValue(Constants.dflt + "UserInputType", value); }
+            set
+            {
+                Source.SetElementValue(Constants.dflt + "UserInputType", value);
+                if (value.Contains("Select"))
+                {
+                    if (Source.Element(Constants.dflt + "Restriction") == null)
+                    {
+                        Source.Add(new XElement(Constants.dflt + "Restriction",
+                            new XElement(Constants.dflt + "Enumeration",
+                                new XAttribute("Text", "Display value1"),
+                                new XAttribute("Value", "001"),
+                                new XAttribute("SelectByDefault", "true")),
+                            new XElement(Constants.dflt + "Enumeration",
+                                new XAttribute("Text", "Display value2"),
+                                new XAttribute("Value", "002"))));
+                    }
+                }
+            }
         }
         public XElement Source { get; set; }
 
