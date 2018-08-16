@@ -39,29 +39,5 @@ namespace B2CPolicyEditor.ViewModels
         {
             get { return PersistedClaims?.Count > 0; }
         }
-        //private static void BuildClaimCollection(string collectionElementName, string claimTypeName, ObservableCollection<ClaimUsage> collection)
-        //{
-        //    if (_tp.Element(Constants.dflt + collectionElementName) != null)
-        //    {
-        //        foreach (var c in _tp.Element(Constants.dflt + collectionElementName).Elements())
-        //            collection.Add(new ClaimUsage(c));
-        //        collection.CollectionChanged += (s, e) =>
-        //        {
-        //            switch (e.Action)
-        //            {
-        //                case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
-        //                    var claim = (ClaimUsage)e.NewItems[0];
-        //                    var source = new XElement(Constants.dflt + claimTypeName);
-        //                    _tp.Element(Constants.dflt + collectionElementName).Add(source);
-        //                    claim.Source = source;
-        //                    break;
-        //                case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
-        //                    claim = (ClaimUsage)e.OldItems[0];
-        //                    claim.Source.Remove();
-        //                    break;
-        //            }
-        //        };
-        //    }
-        //}
     }
 }

@@ -13,7 +13,7 @@ namespace B2CPolicyEditor.Models
         public static string PolicyBaseUrl = "https://raw.githubusercontent.com/Azure-Samples/active-directory-b2c-custom-policy-starterpack/master/{0}/";
         public static string[] PolicyFolderNames =
         {
-            "Local",
+            "LocalAccounts",
             "SocialAccounts",
             "SocialAndLocalAccounts",
             "SocialAndLocalAccountsWithMfa"

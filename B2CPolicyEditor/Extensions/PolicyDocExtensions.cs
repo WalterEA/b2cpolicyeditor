@@ -72,11 +72,11 @@ namespace B2CPolicyEditor.Extensions
             }
             return idp;
         }
-        public static void BuildClaimCollection(this XElement _tp, string collectionElementName, string claimTypeName, ObservableCollection<ClaimUsage> collection)
+        public static void BuildClaimCollection(this XElement tp, string collectionElementName, string claimTypeName, ObservableCollection<ClaimUsage> collection)
         {
-            if (_tp.Element(Constants.dflt + collectionElementName) != null)
+            if (tp.Element(Constants.dflt + collectionElementName) != null)
             {
-                foreach (var c in _tp.Element(Constants.dflt + collectionElementName).Elements())
+                foreach (var c in tp.Element(Constants.dflt + collectionElementName).Elements())
                     collection.Add(new ClaimUsage(c));
                 collection.CollectionChanged += (s, e) =>
                 {
@@ -85,7 +85,7 @@ namespace B2CPolicyEditor.Extensions
                         case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
                             var claim = (ClaimUsage)e.NewItems[0];
                             var source = new XElement(Constants.dflt + claimTypeName);
-                            _tp.Element(Constants.dflt + collectionElementName).Add(source);
+                            tp.Element(Constants.dflt + collectionElementName).Add(source);
                             claim.Source = source;
                             break;
                         case System.Collections.Specialized.NotifyCollectionChangedAction.Remove:
@@ -95,6 +95,16 @@ namespace B2CPolicyEditor.Extensions
                     }
                 };
             }
+        }
+
+        public static XElement GetTechnicalProfile(string id)
+        {
+            return App.PolicySet.Base.Root
+                .Element(Constants.dflt + "ClaimsProviders")
+                    .Elements(Constants.dflt + "ClaimsProvider")
+                        .Elements(Constants.dflt + "TechnicalProfiles")
+                            .Elements(Constants.dflt + "TechnicalProfile").FirstOrDefault(p => p.Attribute("Id").Value == id);
+
         }
     }
 }

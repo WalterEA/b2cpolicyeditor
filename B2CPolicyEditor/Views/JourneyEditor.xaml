@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:B2CPolicyEditor.Views"
+      xmlns:ext="clr-namespace:B2CPolicyEditor.Extensions"
       mc:Ignorable="d" 
       d:DesignHeight="300" d:DesignWidth="300"
       Title="JourneyEditor">
@@ -12,7 +13,12 @@
         <ContextMenu x:Key="StepMenu">
             <MenuItem Header="Delete step" Command="{Binding Delete}" />
         </ContextMenu>
-        <DataTemplate x:Key="StepTemplate">
+        <HierarchicalDataTemplate x:Key="StepTemplate" ItemsSource="{Binding Providers}">
+            <HierarchicalDataTemplate.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Providers}">
+                    <TextBlock Text="{Binding Name}" />
+                </HierarchicalDataTemplate>
+            </HierarchicalDataTemplate.ItemTemplate>
             <StackPanel Orientation="Horizontal" ContextMenu="{StaticResource StepMenu}">
                 <TextBlock Text="{Binding StepNo}" />
                 <Border BorderBrush="Black" BorderThickness="0.5" Margin="0,0,0,6" MinWidth="300" >
@@ -35,82 +41,22 @@
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
-                        <ListView ItemsSource="{Binding Exchanges}" SelectedItem="{Binding DataContext.SelectedExchange, ElementName=_journeyEditor}" Margin="4">
-                            <ListView.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Name}" />
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
                     </StackPanel>
                 </Border>
             </StackPanel>
-        </DataTemplate>
+        </HierarchicalDataTemplate>
     </Page.Resources>
 
     <Grid x:Name="_journeyEditor">
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
-            <!--<ColumnDefinition Width="8" />
-            <ColumnDefinition />-->
             <ColumnDefinition Width="8" />
             <ColumnDefinition />            
         </Grid.ColumnDefinitions>
         <GridSplitter  Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-        <!--<GridSplitter  Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />-->
-        <ListView ItemsSource="{Binding Steps}" ItemTemplate="{StaticResource StepTemplate}" SelectedItem="{Binding SelectedStep}"/>
-        <!--<ListBox ItemsSource="{Binding Providers}" SelectedItem="{Binding SelectedProvider}" Grid.Column="2">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding Id}" />
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>-->
-        <local:TechnicalProfileClaims  Grid.Column="2" DataContext="{Binding ClaimsUsage}" />
-        <!--<Grid Grid.Column="4" DataContext="{Binding ClaimsUsage}">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>                
-                <RowDefinition />
-                <RowDefinition Height="6"/>
-                <RowDefinition Height="Auto"/>                
-                <RowDefinition />
-                <RowDefinition Height="6"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition />
-            </Grid.RowDefinitions>
+        <TreeView ItemsSource="{Binding Steps}" ItemTemplate="{StaticResource StepTemplate}" 
+                  ext:TreeViewHelper.TreeViewSelectedItem="{Binding SelectedArtifact, Mode=TwoWay}"/>
 
-            <TextBlock Text="Input claims"/>
-            <DataGrid Grid.Row="1" ItemsSource="{Binding InputClaims}" AutoGenerateColumns="False" >
-                <DataGrid.Columns>
-                    <DataGridComboBoxColumn Header="Name" SelectedItemBinding="{Binding Id}" 
-                                            ElementStyle="{StaticResource ComboBoxDisplay}" 
-                                            EditingElementStyle="{StaticResource ComboBoxEdit}"/>
-                    <DataGridTextColumn Binding="{Binding PartnerClaimType}" />
-                    <DataGridCheckBoxColumn Binding="{Binding IsRequired}" />
-                </DataGrid.Columns>
-            </DataGrid>
-            <GridSplitter Grid.Row="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />            
-            <TextBlock Grid.Row="3" Text="Output claims" />
-            <DataGrid Grid.Row="4" ItemsSource="{Binding OutputClaims}" AutoGenerateColumns="False" >
-                <DataGrid.Columns>
-                    <DataGridComboBoxColumn Header="Name" SelectedItemBinding="{Binding Id}" 
-                                            ElementStyle="{StaticResource ComboBoxDisplay}" 
-                                            EditingElementStyle="{StaticResource ComboBoxEdit}"/>
-                    <DataGridTextColumn Binding="{Binding PartnerClaimType}" />
-                    <DataGridCheckBoxColumn Binding="{Binding IsRequired}" />
-                </DataGrid.Columns>
-            </DataGrid>
-            <GridSplitter Grid.Row="5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />            
-            <TextBlock Grid.Row="6" Text="Persisted claims" />
-            <DataGrid Grid.Row="7" ItemsSource="{Binding PersistedClaims}" AutoGenerateColumns="False" Visibility="{Binding IsPersistedVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <DataGrid.Columns>
-                    <DataGridComboBoxColumn Header="Name" SelectedItemBinding="{Binding Id}" 
-                                            ElementStyle="{StaticResource ComboBoxDisplay}" 
-                                            EditingElementStyle="{StaticResource ComboBoxEdit}"/>
-                    <DataGridTextColumn Binding="{Binding PartnerClaimType}" />
-                    <DataGridCheckBoxColumn Binding="{Binding IsRequired}" />
-                </DataGrid.Columns>
-            </DataGrid>
-        </Grid>-->
+        <local:TechnicalProfileClaims  Grid.Column="2" DataContext="{Binding ClaimsUsage}" />
     </Grid>
 </Page>

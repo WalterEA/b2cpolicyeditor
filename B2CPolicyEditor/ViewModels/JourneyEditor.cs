@@ -1,4 +1,5 @@
-﻿using B2CPolicyEditor.Models;
+﻿using B2CPolicyEditor.Extensions;
+using B2CPolicyEditor.Models;
 using DataToolkit;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ namespace B2CPolicyEditor.ViewModels
             {
                 Steps.Add(new JourneyStep(this, step));
             }
+            SelectedArtifact = Steps[0]; // otherwise Selection does not databing
             Steps.CollectionChanged += (s, e) =>
             {
                 switch (e.Action)
@@ -46,48 +48,24 @@ namespace B2CPolicyEditor.ViewModels
         }
         XElement _journey;
         public ObservableCollection<JourneyStep> Steps { get; private set; }
-        public JourneyStep SelectedStep
+        public object SelectedArtifact
         {
-            get { return _SelectedStep; }
+            get { return _SelectedArtifact; }
             set
             {
-                if (Set(ref _SelectedStep, value))
-                    OnPropertyChanged("Providers");
-            }
-        }
-        private JourneyStep _SelectedStep;
-
-        public IEnumerable<Provider> Providers
-        {
-            get
-            {
-                if (SelectedStep != null)
-                    return SelectedStep.Source.Element(Constants.dflt + "ClaimsExchanges")?.Elements().Select(e => new Provider(e));
-                return null;
-            }
-        }
-        public Provider SelectedProvider
-        {
-            get { return _SelectedProvider; }
-            set
-            {
-                if (Set(ref _SelectedProvider, value))
+                if (Set(ref _SelectedArtifact, value))
                 {
-                    if (_SelectedProvider == null)
+                    if (_SelectedArtifact is JourneyStep)
                         ClaimsUsage = null;
                     else
                     {
-                        var tp = App.PolicySet.Base.Root
-                            .Element(Constants.dflt + "ClaimsProviders")
-                                .Elements(Constants.dflt + "ClaimsProvider")
-                                    .Elements(Constants.dflt + "TechnicalProfiles")
-                                        .Elements(Constants.dflt + "TechnicalProfile").First(p => p.Attribute("Id").Value == _SelectedProvider.Id);
-                        ClaimsUsage = new TechnicalProfileClaims(tp);
+                        ClaimsUsage = new TechnicalProfileClaims(((TechnicalProfile)value).Source);
                     }
                 }
             }
         }
-        private Provider _SelectedProvider;
+        private object _SelectedArtifact;
+
 
         public TechnicalProfileClaims ClaimsUsage
         {
@@ -95,22 +73,6 @@ namespace B2CPolicyEditor.ViewModels
             set { Set(ref _ClaimsUsage, value); }
         }
         private TechnicalProfileClaims _ClaimsUsage;
-        private Exchange _SelectedExchange;
-        public Exchange SelectedExchange
-        {
-            get { return _SelectedExchange; }
-            set
-            {
-                _SelectedExchange = value;
-                var tp = App.PolicySet.Base.Root
-                    .Element(Constants.dflt + "ClaimsProviders")
-                        .Elements(Constants.dflt + "ClaimsProvider")
-                            .Elements(Constants.dflt + "TechnicalProfiles")
-                                .Elements(Constants.dflt + "TechnicalProfile").FirstOrDefault(p => p.Attribute("Id").Value == _SelectedExchange.Name);
-                ClaimsUsage = new TechnicalProfileClaims(tp);
-                throw new ApplicationException("Ignore this exception. Hack till I figure out how to keep ietms unselected in the listbox.");
-            }
-        }
     }
 
     public class JourneyStep: ObservableObject
@@ -155,20 +117,20 @@ namespace B2CPolicyEditor.ViewModels
         {
             get { return _source.Element(Constants.dflt + "Preconditions") != null; }
         }
-        public IEnumerable<Exchange> Exchanges
+        public IEnumerable<TechnicalProfile> Providers
         {
             get
             {
-                var providers = _source
-                    .Elements(Constants.dflt + "ClaimsProviderSelections")
-                        .Elements(Constants.dflt + "ClaimsProviderSelection")
-                            .Where(p => p.Attribute("TargetClaimsExchangeId") != null)
-                                .Select(p => new Exchange(p) { Name = p.Attribute("TargetClaimsExchangeId").Value });
-                var exchanges = _source
+                //var providers = _source
+                //    .Elements(Constants.dflt + "ClaimsProviderSelections")
+                //        .Elements(Constants.dflt + "ClaimsProviderSelection")
+                //            .Where(p => p.Attribute("TargetClaimsExchangeId") != null)
+                //                .Select(p => new Exchange(p) { Name = p.Attribute("TargetClaimsExchangeId").Value });
+                return _source
                     .Elements(Constants.dflt + "ClaimsExchanges")
                         .Elements(Constants.dflt + "ClaimsExchange")
-                            .Select(e => new Exchange(e) { Name = e.Attribute("TechnicalProfileReferenceId").Value } );
-                return providers.Concat(exchanges);
+                            .Select(e => new TechnicalProfile(PolicyDocExtensions.GetTechnicalProfile(e.Attribute("TechnicalProfileReferenceId").Value)));
+                //return providers.Concat(exchanges);
             }
         }
         public ICommand Delete { get; private set; }
@@ -207,26 +169,36 @@ namespace B2CPolicyEditor.ViewModels
         }
     }
 
-    public class Provider
+    public class TechnicalProfile
     {
-        public Provider(XElement p)
+        public TechnicalProfile(XElement tp)
         {
-            _provider = p;
-        }
-        XElement _provider;
-        public string Id
-        {
-            get => _provider.Attribute("TechnicalProfileReferenceId").Value;
-        }
-    }
+            if (tp == null) throw new ArgumentException("tp cannot be null");
+            Source = tp;
 
-    public class Exchange
-    {
-        public Exchange(XElement source)
-        {
-            Source = source;
+            Providers = new List<TechnicalProfile>();
+            var validations = Source.Element(Constants.dflt + "ValidationTechnicalProfiles");
+            if (validations != null)
+            {
+                foreach (var validationTp in validations.Elements(Constants.dflt + "ValidationTechnicalProfile"))
+                {
+                    VerifyAndAddIncludedTp(validationTp);
+                }
+            }
+            var refTp = tp.Element(Constants.dflt + "IncludeTechnicalProfile");
+            VerifyAndAddIncludedTp(refTp);
         }
-        public string Name { get; set; }
-        public XElement Source { get; }
+        private void VerifyAndAddIncludedTp(XElement el)
+        {
+            if (el == null) return;
+            var refTp = PolicyDocExtensions.GetTechnicalProfile(el.Attribute("ReferenceId").Value);
+            if ((refTp.Element(Constants.dflt + "InputClaims") != null) ||
+                (refTp.Element(Constants.dflt + "OutputClaims") != null) ||
+                (refTp.Element(Constants.dflt + "PersistedClaims") != null))
+                Providers.Add(new TechnicalProfile(refTp));
+        }
+        public string Name { get => Source.Attribute("Id").Value; }
+        public XElement Source { get; private set; }
+        public List<TechnicalProfile> Providers { get; private set; }
     }
 }
