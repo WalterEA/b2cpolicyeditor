@@ -283,17 +283,7 @@ namespace B2CPolicyEditor.Models
                         Elements(Constants.dflt + "ClaimsProvider").
                             Elements(Constants.dflt + "TechnicalProfiles").
                                 Elements(Constants.dflt + "TechnicalProfile").First(el => el.Attribute("Id").Value == "AAD-Common");
-                var metadata = tp.Element(Constants.dflt + "Metadata");
-                if (metadata != null)
-                {
-                    metadata.Elements(Constants.dflt + "Item").First(i => i.Attribute("Key").Value == "ClientId").Value = value;
-                } else
-                {
-                    //HACK: Possible hack - for some reason upload refuses unless Metadata follows immediately after Protocol element!
-                    tp.Element(Constants.dflt + "Protocol").AddAfterSelf(new XElement(Constants.dflt + "Metadata",
-                        new XElement(Constants.dflt + "Item", new XAttribute("Key", "ApplicationObjectId"), value),
-                        new XElement(Constants.dflt + "Item", new XAttribute("Key", "ClientId"), "")));
-                }
+                tp.SetMetadataValue("ClientId", value);
             }
         }
         [JsonIgnore]
@@ -327,18 +317,7 @@ namespace B2CPolicyEditor.Models
                         Elements(Constants.dflt + "ClaimsProvider").
                             Elements(Constants.dflt + "TechnicalProfiles").
                                 Elements(Constants.dflt + "TechnicalProfile").First(el => el.Attribute("Id").Value == "AAD-Common");
-                var metadata = tp.Element(Constants.dflt + "Metadata");
-                if (metadata != null)
-                {
-                    metadata.Elements(Constants.dflt + "Item").First(i => i.Attribute("Key").Value == "ApplicationObjectId").Value = value;
-                }
-                else
-                {
-                    //HACK: Possible hack - for some reason upload refuses unless Metadata follows immediately after Protocol element!
-                    tp.Element(Constants.dflt + "Protocol").AddAfterSelf(new XElement(Constants.dflt + "Metadata",
-                        new XElement(Constants.dflt + "Item", new XAttribute("Key", "ApplicationObjectId"), ""),
-                        new XElement(Constants.dflt + "Item", new XAttribute("Key", "ClientId"), value)));
-                }
+                tp.SetMetadataValue("ApplicationObjectId", value);
             }
         }
 

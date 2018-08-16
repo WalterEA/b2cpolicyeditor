@@ -71,6 +71,13 @@ namespace B2CPolicyEditor.ViewModels
             Save = new DelegateCommand(() =>
             {
                 var projectDir = App.PolicySet.ProjectFolder; // ConfigurationManager.AppSettings["xml:ProjectDir"];
+                if (String.IsNullOrEmpty(projectDir))
+                {
+                        var dlg = new System.Windows.Forms.FolderBrowserDialog() { ShowNewFolderButton = true };
+                        //dlg.RootFolder = Environment.SpecialFolder.Desktop;
+                        if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.Cancel) return;
+                    App.PolicySet.ProjectFolder = projectDir = dlg.SelectedPath;
+                };
                 var projFile = $"{projectDir}/PolicySet.json";
                 using (var str = File.CreateText(projFile))
                 {

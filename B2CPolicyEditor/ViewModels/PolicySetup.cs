@@ -25,6 +25,7 @@ namespace B2CPolicyEditor.ViewModels
             IEFAppId = App.PolicySet.IEFAppId;
             IEFProxyAppId = App.PolicySet.IEFProxyAppId;
             ExtensionAppId = App.PolicySet.B2CExtensionAppId;
+            ExtensionObjId = App.PolicySet.B2CExtensionObjId;
         }
         private async Task VerifyB2CSetup()
         {

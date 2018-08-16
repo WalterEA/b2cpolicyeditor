@@ -8,19 +8,24 @@
         Title="Choose policy" Height="300" Width="300">
     <Grid>
         <StackPanel>
-            <GroupBox Header="Choose initial pattern" Margin="8">
+            <GroupBox Header="Choose initial pattern" Margin="8" Padding="10">
                 <StackPanel>
+                    <StackPanel.Resources>
+                        <Style TargetType="RadioButton">
+                            <Setter Property="Margin" Value="8" />
+                        </Style>
+                    </StackPanel.Resources>
                     <RadioButton Content="Local accounts only" IsChecked="{Binding SelectLocal, Mode=TwoWay}" Tag="Local" />
                     <RadioButton Content="Social (Facebook) only" IsChecked="{Binding SelectSocial, Mode=TwoWay}" Tag="SocialAccounts" />
                     <RadioButton Content="Local and social (Facebook)" IsChecked="{Binding SelectLocalAndSocial, Mode=TwoWay}" Tag="SocialAndLocalAccounts" />
                     <RadioButton Content="Local and social (Facebook) with MFA" IsChecked="{Binding SelectLocalAndSocialMFA, Mode=TwoWay}" Tag="SocialAndLocalAccountsWithMfa" />                    
                 </StackPanel>
             </GroupBox>
-            <StackPanel Orientation="Horizontal" Margin="8">
+            <!--<StackPanel Orientation="Horizontal" Margin="8">
                 <TextBlock Text="Project folder" Margin="0,0,4,0" />
                 <TextBox Text="{Binding PolicyFolder, Mode=TwoWay}" MinWidth="150" />
                 <Button Content="Browse..." Command="{Binding BrowseFolder}" />
-            </StackPanel>
+            </StackPanel>-->
             <StackPanel Orientation="Horizontal" Margin="8">
                 <TextBlock Text="Policy name prefix" Margin="0,0,4,0" />
                 <TextBox Text="{Binding PolicyPrefix, Mode=TwoWay}" MinWidth="150" />

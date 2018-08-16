@@ -17,24 +17,24 @@ namespace B2CPolicyEditor.ViewModels
         public NewPolicyLoad()
         {
             SelectLocalAndSocial = true;
-            _PolicyFolder = @"c:\temp\Policies";
+            //_PolicyFolder = @"c:\temp\Policies";
             _PolicyPrefix = "Test";
 
             Load = new DelegateCommand(() =>
             {
-                App.PolicySet = new Models.PolicySet() { NamePrefix = PolicyPrefix, ProjectFolder = PolicyFolder };
+                App.PolicySet = new Models.PolicySet() { NamePrefix = PolicyPrefix };
                 var url = String.Format(Constants.PolicyBaseUrl, Constants.PolicyFolderNames[_selectedPattern]);
                 App.PolicySet.Load(url);
                 if (Closing != null)
                     Closing();
             });
-            BrowseFolder = new DelegateCommand(() =>
-            {
-                var dlg = new System.Windows.Forms.FolderBrowserDialog() { ShowNewFolderButton = true };
-                //dlg.RootFolder = Environment.SpecialFolder.Desktop;
-                if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.Cancel) return;
-                PolicyFolder = dlg.SelectedPath;
-            });
+            //BrowseFolder = new DelegateCommand(() =>
+            //{
+            //    var dlg = new System.Windows.Forms.FolderBrowserDialog() { ShowNewFolderButton = true };
+            //    //dlg.RootFolder = Environment.SpecialFolder.Desktop;
+            //    if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.Cancel) return;
+            //    PolicyFolder = dlg.SelectedPath;
+            //});
         }
         public event Action Closing;
         private int _selectedPattern;
@@ -79,16 +79,16 @@ namespace B2CPolicyEditor.ViewModels
             }
         }
         private bool _SelectLocalAndSocialMFA;
-        public string PolicyFolder
-        {
-            get { return _PolicyFolder; }
-            set
-            {
-                if (Set(ref _PolicyFolder, value))
-                    Validate();
-            }
-        }
-        private string _PolicyFolder;
+        //public string PolicyFolder
+        //{
+        //    get { return _PolicyFolder; }
+        //    set
+        //    {
+        //        if (Set(ref _PolicyFolder, value))
+        //            Validate();
+        //    }
+        //}
+        //private string _PolicyFolder;
         public string PolicyPrefix
         {
             get { return _PolicyPrefix; }
@@ -104,13 +104,13 @@ namespace B2CPolicyEditor.ViewModels
 
         private void Validate()
         {
-            var folderOk = Directory.Exists(_PolicyFolder);
-            if (!folderOk) MainWindow.Trace.Add(new TraceItem() { Msg = $"Folder {_PolicyFolder} does not exist" });
+            //var folderOk = Directory.Exists(_PolicyFolder);
+            //if (!folderOk) MainWindow.Trace.Add(new TraceItem() { Msg = $"Folder {_PolicyFolder} does not exist" });
 
             var prefixOk = Regex.Match(_PolicyPrefix, @"^[A-Za-z][\w]").Success;
             if (!prefixOk) MainWindow.Trace.Add(new TraceItem { Msg = $"Not a valid prefix. Must be Alphanumeric, starting with alpha." });
 
-            ((DelegateCommand)Load).Enabled = prefixOk && folderOk;
+            ((DelegateCommand)Load).Enabled = prefixOk; // && folderOk;
         }
     }
 }

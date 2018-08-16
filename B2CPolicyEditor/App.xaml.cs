@@ -15,13 +15,5 @@ namespace B2CPolicyEditor
     public partial class App : Application
     {
         public static Models.PolicySet PolicySet = new Models.PolicySet();
-
-        void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
-        {
-            // Process unhandled exception
-
-            // Prevent default unhandled exception processing
-            e.Handled = true;
-        }
     }
 }

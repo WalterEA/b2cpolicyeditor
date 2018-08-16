@@ -106,5 +106,24 @@ namespace B2CPolicyEditor.Extensions
                             .Elements(Constants.dflt + "TechnicalProfile").FirstOrDefault(p => p.Attribute("Id").Value == id);
 
         }
+        public static void SetMetadataValue(this XElement parent, string keyName, string value) // tested only with TP
+        {
+            var metadata = parent.Element(Constants.dflt + "Metadata");
+            if (metadata != null)
+            {
+                //metadata.SetElementValue(Constants.dflt + "Item", new XAttribute("Key", "ApplicationObjectId"));
+                var objId = metadata.Elements(Constants.dflt + "Item").FirstOrDefault(i => i.Attribute("Key")?.Value == keyName);
+                if (objId == null)
+                    metadata.Add(new XElement(Constants.dflt + "Item", new XAttribute("Key", keyName), value));
+                else
+                    objId.Value = value;
+            }
+            else
+            {
+                //HACK: Possible hack - for some reason upload refuses unless Metadata follows immediately after Protocol element!
+                parent.Element(Constants.dflt + "Protocol").AddAfterSelf(new XElement(Constants.dflt + "Metadata",
+                    new XElement(Constants.dflt + "Item", new XAttribute("Key", keyName), value)));
+            }
+        }
     }
 }
