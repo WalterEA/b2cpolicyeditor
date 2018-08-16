@@ -13,6 +13,9 @@
         <ContextMenu x:Key="StepMenu">
             <MenuItem Header="Delete step" Command="{Binding Delete}" />
         </ContextMenu>
+        <Style TargetType="{x:Type TreeViewItem}">
+            <Setter Property="IsExpanded" Value="True"/>
+        </Style>
         <HierarchicalDataTemplate x:Key="StepTemplate" ItemsSource="{Binding Providers}">
             <HierarchicalDataTemplate.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Providers}">

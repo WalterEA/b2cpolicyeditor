@@ -21,13 +21,12 @@ namespace B2CPolicyEditor.ViewModels
     {
         public AADIdP(XElement tp)
         {
-            _source = tp.Parent.Parent; // claimsprovider
+            _tp = tp;
+            _cp = _tp.Parent.Parent; // claimsprovider
             var b2cDomain = App.PolicySet.Base.Root.Attribute("TenantId").Value.Split('.')[0];
             B2CNameInIdP = $"B2C {b2cDomain} Federation";
             TpId = tp.Attribute("Id").Value;
-            AppSecretName = tp.Element(Constants.dflt + "CryptographicKeys")
-                    .Elements(Constants.dflt + "Key")
-                        .First(k => k.Attribute("Id").Value == "client_secret").Attribute("StorageReferenceId").Value; 
+
             Configure = new DelegateCommand(async () =>
             {
                 // Do not use FileCache to avoid conflict with B2C admin signin
@@ -82,11 +81,11 @@ namespace B2CPolicyEditor.ViewModels
                         var app = new
                         {
                             displayName = B2CNameInIdP,
-                            homepage = $"https://login.microsofonline.com/te/{App.PolicySet.Domain}/oauth2/authresp",
+                            homepage = $"https://login.microsoftonline.com/te/{App.PolicySet.Domain}/oauth2/authresp",
                             identifierUris = new List<string>() { $"https://{App.PolicySet.Domain}" },
                             oauth2AllowIdTokenImplicitFlow = true,
                             publicClient = false,
-                            replyUrls = new List<string>() { $"https://login.microsofonline.com/te/{App.PolicySet.Domain}/oauth2/authresp" },
+                            replyUrls = new List<string>() { $"https://login.microsoftonline.com/te/{App.PolicySet.Domain}/oauth2/authresp" },
                             requiredResourceAccess = new List<object>() { requiredAADAccess },
                             keyCredentials = new List<object>() { appSecret },
                         };
@@ -108,22 +107,22 @@ namespace B2CPolicyEditor.ViewModels
                         MainWindow.Trace.Add(new TraceItem() { Msg = $"Existing B2C reference found in AAD with appId: {AppId}" });
                     }
 
-                    _source.SetElementValue(Constants.dflt + "Domain", DomainName);
-                    _source.SetElementValue(Constants.dflt + "DisplayName", DisplayName);
+                    //_cp.SetElementValue(Constants.dflt + "Domain", DomainName);
+                    //_cp.SetElementValue(Constants.dflt + "DisplayName", DisplayName);
 
-                    //tp.SetAttributeValue("Id", TechnicalProfileName);
-                    tp.SetElementValue(Constants.dflt + "DisplayName", DisplayName);
-                    tp.SetElementValue(Constants.dflt + "Description", Description);
+                    //_tp.SetAttributeValue("Id", TechnicalProfileName);
+                    //_tp.SetElementValue(Constants.dflt + "DisplayName", DisplayName);
+                    //_tp.SetElementValue(Constants.dflt + "Description", Description);
 
-                    var meta = tp.Element(Constants.dflt + "Metadata");
+                    var meta = _tp.Element(Constants.dflt + "Metadata");
                     meta.Elements(Constants.dflt + "Item").First(i => i.Attribute("Key")?.Value == "METADATA").Value = $"https://login.windows.net/{DomainName}/.well-known/openid-configuration";
                     meta.Elements(Constants.dflt + "Item").First(i => i.Attribute("Key")?.Value == "ProviderName").Value = $"https://sts.windows.net/{TenantId}/";
                     meta.Elements(Constants.dflt + "Item").First(i => i.Attribute("Key")?.Value == "client_id").Value = AppId;
                     meta.Elements(Constants.dflt + "Item").First(i => i.Attribute("Key")?.Value == "IdTokenAudience").Value = AppId;
 
-                    //tp.Element(Constants.dflt + "CryptographicKeys").Elements(Constants.dflt + "Key").First(c => c.Attribute("Id")?.Value == "client_secret").SetAttributeValue("Id", AppSecretName);
+                    //_tp.Element(Constants.dflt + "CryptographicKeys").Elements(Constants.dflt + "Key").First(c => c.Attribute("Id")?.Value == "client_secret").SetAttributeValue("Id", AppSecretName);
 
-                    //tp.Element(Constants.dflt + "OutputClaims").Elements(Constants.dflt + "OutputClaim").First(c => c.Attribute("ClaimTypeReferenceId")?.Value == "identityProvider").SetAttributeValue("ClaimTypeReferenceId", TpId);
+                    //_tp.Element(Constants.dflt + "OutputClaims").Elements(Constants.dflt + "OutputClaim").First(c => c.Attribute("ClaimTypeReferenceId")?.Value == "identityProvider").SetAttributeValue("ClaimTypeReferenceId", TpId);
 
                 }
                 catch (Exception ex)
@@ -132,7 +131,8 @@ namespace B2CPolicyEditor.ViewModels
                 }
             });
         }
-        XElement _source;
+        XElement _cp;
+        XElement _tp;
 
         private string _aadName; 
         public string TpId
@@ -157,31 +157,35 @@ namespace B2CPolicyEditor.ViewModels
 
         public string DomainName
         {
-            get { return _DomainName; }
+            get => _cp.Element(Constants.dflt + "Domain")?.Value;
             set
             {
-                Set(ref _DomainName, value);
+                _cp.SetElementValue(Constants.dflt + "Domain", value);
+                OnPropertyChanged("DomainName");
             }
         }
-        private string _DomainName;
+
         public string DisplayName
         {
-            get { return _DisplayName; }
+            get => _cp.Element(Constants.dflt + "DisplayName")?.Value;
             set
             {
-                Set(ref _DisplayName, value);
+                _cp.SetElementValue(Constants.dflt + "DisplayName", value);
+                _tp.SetElementValue(Constants.dflt + "DisplayName", value);
+                OnPropertyChanged("DisplayName");
             }
         }
-        private string _DisplayName;
+
         public string Description
         {
-            get { return _Description; }
+            get => _tp.Element(Constants.dflt + "Description")?.Value;
             set
             {
-                Set(ref _Description, value);
+                _tp.SetElementValue(Constants.dflt + "Description", value);
+                OnPropertyChanged("Description");
             }
         }
-        private string _Description;
+
         public string TenantId { get; set; }
         public Uri LoginUrl { get; set; }
 
@@ -199,13 +203,17 @@ namespace B2CPolicyEditor.ViewModels
         private string _AppSecret;
         public string AppSecretName
         {
-            get { return _AppSecretName; }
+            get => _tp.Element(Constants.dflt + "CryptographicKeys")
+                    .Elements(Constants.dflt + "Key")
+                        .First(k => k.Attribute("Id").Value == "client_secret").Attribute("StorageReferenceId").Value;
             set
             {
-                Set(ref _AppSecretName, value);
+                _tp.Element(Constants.dflt + "CryptographicKeys")
+                    .Elements(Constants.dflt + "Key")
+                        .First(k => k.Attribute("Id").Value == "client_secret").Attribute("StorageReferenceId").Value = value;
+                OnPropertyChanged("AppSecretName");
             }
         }
-        private string _AppSecretName;
 
         public ICommand Configure { get; private set; }
     }

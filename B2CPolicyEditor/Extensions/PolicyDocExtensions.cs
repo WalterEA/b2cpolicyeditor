@@ -35,6 +35,7 @@ namespace B2CPolicyEditor.Extensions
                     new XAttribute("TechnicalProfileReferenceId", tpID)));
             } catch(Exception ex)
             {
+                ViewModels.MainWindow.Trace.Add(new TraceItem() { Msg = "Failed to update Journeys with IdP" });
                 throw;
             }
         }

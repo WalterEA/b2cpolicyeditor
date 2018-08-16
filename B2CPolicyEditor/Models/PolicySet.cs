@@ -97,7 +97,7 @@ namespace B2CPolicyEditor.Models
                     _journeys.Add(j);
                     j = LoadFromStarterPack(baseDir, "PasswordReset");
                     _journeys.Add(j);
-                } catch(Exception ex)
+                } catch(Exception ex) 
                 {
                     if (_base == null)
                         throw;
@@ -182,13 +182,19 @@ namespace B2CPolicyEditor.Models
         {
             get
             {
-                var tp =
-                     _base.Root.Element(Constants.dflt + "ClaimsProviders").
-                         Elements(Constants.dflt + "ClaimsProvider").
-                             Elements(Constants.dflt + "TechnicalProfiles").
-                                 Elements(Constants.dflt + "TechnicalProfile").First(el => el.Attribute("Id").Value == "login-NonInteractive");
-                var id = tp.Element(Constants.dflt + "Metadata").Elements(Constants.dflt + "Item").FirstOrDefault(c => c.Attribute("Key").Value == "IdTokenAudience");
-                return id != null ? id.Value : String.Empty;
+                try
+                {
+                    var tp =
+                         _base.Root.Element(Constants.dflt + "ClaimsProviders").
+                             Elements(Constants.dflt + "ClaimsProvider").
+                                 Elements(Constants.dflt + "TechnicalProfiles").
+                                     Elements(Constants.dflt + "TechnicalProfile").First(el => el.Attribute("Id").Value == "login-NonInteractive");
+                    return tp.Element(Constants.dflt + "Metadata").Elements(Constants.dflt + "Item").FirstOrDefault(c => c.Attribute("Key").Value == "IdTokenAudience")?.Value;
+                } catch(Exception ex)
+                {
+                    ViewModels.MainWindow.Trace.Add(new ViewModels.TraceItem() { Msg = "IEF App ID not found. OK if new policy or local users not used." });
+                }
+                return String.Empty;
             }
             set
             {
@@ -230,6 +236,7 @@ namespace B2CPolicyEditor.Models
                                             Elements(Constants.dflt + "Item").First(c => c.Attribute("Key").Value == "client_id").Value;
                 } catch(Exception ex)
                 {
+                    ViewModels.MainWindow.Trace.Add(new ViewModels.TraceItem() { Msg = "IEF App ID not found. OK if new policy or local users not used." });
                     return String.Empty;
                 }
             }

@@ -7,9 +7,12 @@
         xmlns:vm="clr-namespace:B2CPolicyEditor.ViewModels"
         xmlns:ext="clr-namespace:B2CPolicyEditor.Extensions"
         mc:Ignorable="d"
-        Title="B2C Policy Editor" Height="600" Width="800">
+        Title="B2C Policy Editor" Height="600" Width="800" x:Name="Main">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <ContextMenu x:Key="TreeItemMenu">
+            <MenuItem Header="Delete" Command="{Binding Path=DataContext.DeleteItem, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" />
+        </ContextMenu>
         <HierarchicalDataTemplate x:Key="ArtifactItemTemplate" ItemsSource="{Binding Items}">
             <TextBlock Text="{Binding Name}" />
         </HierarchicalDataTemplate>
@@ -63,6 +66,7 @@
                         <TreeView.ItemContainerStyle>
                             <Style TargetType="{x:Type TreeViewItem}">
                                 <Setter Property="IsExpanded" Value="True"/>
+                                <Setter Property="ContextMenu" Value="{StaticResource TreeItemMenu}" />
                             </Style>
                         </TreeView.ItemContainerStyle>
                     </TreeView>

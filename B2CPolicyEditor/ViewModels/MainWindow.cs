@@ -395,6 +395,9 @@ namespace B2CPolicyEditor.ViewModels
 
     public class TreeViewVMItem: ObservableObject
     {
+        public TreeViewVMItem()
+        {
+        }
         internal enum TreeViewItemCatorgies { Other, IdPs, Claims, Journeys, Detail };
         internal enum TreeViewItemDetails {  Other, IdP, Claim, Journey, Token }
         internal TreeViewItemCatorgies Category { get; set; }
@@ -420,7 +423,6 @@ namespace B2CPolicyEditor.ViewModels
             }
         }
         private object _DataSource;
-
     }
 
     public class TraceItem

@@ -95,11 +95,11 @@ namespace B2CPolicyEditor.ViewModels
             var app = new
             {
                 displayName = appName,
-                homepage = $"https://login.microsofonline.com/{App.PolicySet.Domain}",
+                homepage = $"https://login.microsoftonline.com/{App.PolicySet.Domain}",
                 identifierUris = new List<string>() { $"https://{appName}" },
                 oauth2AllowIdTokenImplicitFlow = true,
                 publicClient = isProxy,
-                replyUrls = new List<string>() { $"https://login.microsofonline.com/{App.PolicySet.Domain}" },
+                replyUrls = new List<string>() { $"https://login.microsoftonline.com/{App.PolicySet.Domain}" },
                 requiredResourceAccess = new List<object>() { requiredAADAccess }
             };
             if (isProxy)

@@ -33,12 +33,14 @@
 
         <TextBlock Grid.Row="2" Text="Profile id" />
         <TextBlock Grid.Row="3" Text="Domain" />
-        <TextBlock Grid.Row="4" Text="Secret key name (add to B2C)" TextWrapping="Wrap" />
-        <TextBlock Grid.Row="5" Text="Secret value" />
+        <TextBlock Grid.Row="4" Text="Description" />
+        <TextBlock Grid.Row="5" Text="Secret key name (add to B2C)" TextWrapping="Wrap" />
+        <TextBlock Grid.Row="6" Text="Secret value" />
 
-        <TextBlock Grid.Column="2" Grid.Row="2" Text="{Binding TpId}" />
-        <TextBlock Grid.Column="2" Grid.Row="3" Text="{Binding DomainName}" />
-        <TextBlock Grid.Column="2" Grid.Row="4" Text="{Binding AppSecretName}" />
-        <TextBlock Grid.Column="2" Grid.Row="5" Text="{Binding AppSecret}" />
+        <TextBox Grid.Column="2" Grid.Row="2" Text="{Binding TpId}" />
+        <TextBox Grid.Column="2" Grid.Row="3" Text="{Binding DomainName}" />
+        <TextBox Grid.Column="2" Grid.Row="4" Text="{Binding Description}" />        
+        <TextBox Grid.Column="2" Grid.Row="5" Text="{Binding AppSecretName}" />
+        <TextBox Grid.Column="2" Grid.Row="6" Text="{Binding AppSecret}" />
     </Grid>
 </Page>
