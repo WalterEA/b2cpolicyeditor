@@ -31,10 +31,10 @@
             </Grid.RowDefinitions>
             <ToolBarTray>
                 <ToolBar>
-                    <Button Content="New..." Command="{Binding NewPolicy}" Margin="10" />                
-                    <Button Content="Load..." Command="{Binding Open}" Margin="10" />
-                    <Button Content="Save" Command="{Binding Save}" Margin="10" />
-                    <Button Content="Add IdP..." Command="{Binding AddIdP}" Margin="10" />
+                    <Button Content="New..." Command="{Binding NewPolicy}" Margin="10" ToolTip="Download one of the Starter Pack policy sets" />                
+                    <Button Content="Load..." Command="{Binding Open}" Margin="10" ToolTip="Read existing policy set (base and journeys) from a folder" />
+                    <Button Content="Save" Command="{Binding Save}" Margin="10" ToolTip="Save current policy set to a folder" />
+                    <Button Content="Add IdP..." Command="{Binding AddIdP}" Margin="10" ToolTip="Add a new Identity Provider (social or custom)" />
                     <!--<StackPanel Orientation="Horizontal" Margin="10">
                         <TextBlock Text="Add social IdP:" Margin="0,2,4,0"/>
                         <ComboBox>
@@ -88,7 +88,7 @@
             </Grid>
         </Grid>
         <Grid Background="#10101010" Visibility="{Binding IsDisabled, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <ProgressBar VerticalAlignment="Center" HorizontalAlignment="Center" Height="200" Width="200" IsIndeterminate="true" Opacity="0.4"/>
+            <ProgressBar IsIndeterminate="true" Opacity="0.4"/>
         </Grid>
     </Grid>
 </Window>
