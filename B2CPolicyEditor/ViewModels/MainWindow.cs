@@ -242,7 +242,7 @@ namespace B2CPolicyEditor.ViewModels
                     if (meta != null)
                     {
                         var sts = meta.Elements(Constants.dflt + "Item").Where(i => i.Attribute("Key")?.Value == "METADATA").First();
-                        if ((sts != null) && (sts.Value.StartsWith("https://login.windows.net/")))
+                        if ((sts != null) && (sts.Value.StartsWith("https://login.microsoftonline.com/")))
                             cp.Command = new DelegateCommand((obj) => DetailView = new Views.AADIdP() { DataContext = new ViewModels.AADIdP((XElement)obj) });
                     }
                 }

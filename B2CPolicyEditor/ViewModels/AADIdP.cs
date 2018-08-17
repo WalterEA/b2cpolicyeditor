@@ -29,6 +29,11 @@ namespace B2CPolicyEditor.ViewModels
 
             Configure = new DelegateCommand(async () =>
             {
+                if (App.PolicySet.Base.Root.Attribute("TenantId").Value.StartsWith("yourtenant."))
+                {
+                    MessageBox.Show("Please first configure your policies for your B2C tenant. Use 'Policy set setup'.");
+                    return;
+                }
                 // Do not use FileCache to avoid conflict with B2C admin signin
                 var ctx = new AuthenticationContext("https://login.microsoftonline.com/common");
                 try
@@ -223,7 +228,7 @@ namespace B2CPolicyEditor.ViewModels
                 return _tp.Element(Constants.dflt + "Metadata")
                             .Elements(Constants.dflt + "Item")
                                 .Where(i => i.Attribute("Key")?.Value == "METADATA").First()
-                                    .Value.StartsWith("https://login.windows.net/common");
+                                    .Value.StartsWith("https://login.microsoftonline.com/common");
             }
         }
 
