@@ -21,6 +21,7 @@ namespace B2CPolicyEditor.Models
         public static Dictionary<string,string> SupportedIdPs = new Dictionary<string, string>()
         {
             { "AAD", "Azure AD" },
+            { "AADMT", "Azure AD multi-tenant" },
             { "Facebook", "Facebook" },
             { "MSA", "Microsoft Account" },
             { "Google", "Google"},

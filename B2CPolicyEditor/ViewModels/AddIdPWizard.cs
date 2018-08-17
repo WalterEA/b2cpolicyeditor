@@ -90,6 +90,7 @@ namespace B2CPolicyEditor.ViewModels
             switch(_SelectedIdPType.Key)
             {
                 case "AAD":
+                case "AADMT":
                 case "SAML":
                     idp = PolicyDocExtensions.CreateIdP(_SelectedIdPType.Key, Id);
                     break;

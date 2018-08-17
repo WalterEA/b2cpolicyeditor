@@ -82,12 +82,13 @@ namespace B2CPolicyEditor.ViewModels
                         {
                             displayName = B2CNameInIdP,
                             homepage = $"https://login.microsoftonline.com/te/{App.PolicySet.Domain}/oauth2/authresp",
-                            identifierUris = new List<string>() { $"https://{App.PolicySet.Domain}" },
+                            identifierUris = new List<string>() { $"https://{DomainName}/{App.PolicySet.Domain}" },
                             oauth2AllowIdTokenImplicitFlow = true,
                             publicClient = false,
                             replyUrls = new List<string>() { $"https://login.microsoftonline.com/te/{App.PolicySet.Domain}/oauth2/authresp" },
                             requiredResourceAccess = new List<object>() { requiredAADAccess },
                             keyCredentials = new List<object>() { appSecret },
+                            availableToOtherTenants = IsMultiTenant,
                         };
                         var json = JsonConvert.SerializeObject(app);
                         var postResp = await http.PostAsync($"https://graph.windows.net/myorganization/applications?api-version=1.6",
@@ -214,6 +215,18 @@ namespace B2CPolicyEditor.ViewModels
                 OnPropertyChanged("AppSecretName");
             }
         }
+
+        public bool IsMultiTenant
+        {
+            get
+            {
+                return _tp.Element(Constants.dflt + "Metadata")
+                            .Elements(Constants.dflt + "Item")
+                                .Where(i => i.Attribute("Key")?.Value == "METADATA").First()
+                                    .Value.StartsWith("https://login.windows.net/common");
+            }
+        }
+
 
         public ICommand Configure { get; private set; }
     }
