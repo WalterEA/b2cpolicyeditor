@@ -29,7 +29,8 @@
             <RowDefinition />
         </Grid.RowDefinitions>
         <GridSplitter Grid.Column="1" Grid.RowSpan="99" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-        <Button Content="Configure..." Command="{Binding Configure}" Margin="10" />
+        <Button Content="Configure..." Command="{Binding Configure}" Margin="10"
+                ToolTip="Connect to the AAD (not B2C) tenant to create/get appropriate application objects and update the policy set"/>
 
         <TextBlock Grid.Row="2" Text="Profile id" />
         <TextBlock Grid.Row="3" Text="Domain" />

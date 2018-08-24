@@ -29,17 +29,17 @@
         </Grid.RowDefinitions>
         <GridSplitter Grid.Column="1" Grid.RowSpan="99" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
         <TextBlock Text="IdP type" />
-        <TextBlock Grid.Row="4" Text="Id" />
+        <TextBlock Grid.Row="4" Text="Id" Margin="0,6,0,6"/>
         <TextBlock Grid.Row="5" Text="Use in journeys" />
 
         <ComboBox Grid.Column="2" ItemsSource="{Binding IdPTypes}" SelectedIndex="0" SelectedItem="{Binding SelectedIdPType,Mode=TwoWay}" DisplayMemberPath="Value" />
-        <TextBox Grid.Column="2" Grid.Row="4" Text="{Binding Id, Mode=TwoWay}" />
+        <TextBox Grid.Column="2" Grid.Row="4" Text="{Binding Id, Mode=TwoWay}" ToolTip="TechnicalProfile ID"  Margin="0,6,0,6" />
         <DataGrid Grid.Column="2" Grid.Row="5" Grid.RowSpan="6" ItemsSource="{Binding Journeys}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" >
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Type" Binding="{Binding Name}" Width="60" IsReadOnly="True"/>
                 <DataGridCheckBoxColumn Header="Add IdP to this journey?" Binding="{Binding IsSelected}" />
             </DataGrid.Columns>
         </DataGrid>
-        <Button Content="Apply" Command="{Binding Apply}" Grid.Column="2" Grid.Row="12" HorizontalAlignment="Center" IsDefault="True"/>
+        <Button Content="Apply" Command="{Binding Apply}" Grid.Column="2" Grid.Row="12" HorizontalAlignment="Center" IsDefault="True" ToolTip="Create IdP definition in policy set"/>
     </Grid>
 </Window>
