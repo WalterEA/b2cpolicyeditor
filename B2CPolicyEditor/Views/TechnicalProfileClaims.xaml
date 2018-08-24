@@ -35,6 +35,7 @@
                                             ElementStyle="{StaticResource ComboBoxDisplay}" 
                                             EditingElementStyle="{StaticResource ComboBoxEdit}"/>
                     <DataGridTextColumn Binding="{Binding PartnerClaimType}" Header="Partner claim id" />
+                    <DataGridTextColumn Binding="{Binding DefaultValue}" Header="Default value" />
                     <DataGridCheckBoxColumn Binding="{Binding IsRequired}" Header="Is required?"/>
                 </DataGrid.Columns>
             </DataGrid>

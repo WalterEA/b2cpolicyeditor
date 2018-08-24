@@ -39,7 +39,10 @@ namespace B2CPolicyEditor.ViewModels
                 {
                     if (App.PolicySet.IsDirty)
                         Save.Execute(null);
-                    var dlg = new System.Windows.Forms.FolderBrowserDialog();
+                    var dlg = new System.Windows.Forms.FolderBrowserDialog()
+                    {
+                        SelectedPath = App.MRU.ProjectFolder
+                    };
                     if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
                         return;
                     var projectDir = dlg.SelectedPath;
@@ -56,7 +59,7 @@ namespace B2CPolicyEditor.ViewModels
                     else
                         App.PolicySet = new Models.PolicySet() { NamePrefix = "Prefix" };
 
-                    App.PolicySet.ProjectFolder = projectDir;
+                    App.MRU.ProjectFolder = projectDir;
 
                     //var sourceDir = "";
                     //if ((App.PolicySet.FileNames != null) && File.Exists($"{projectDir}/{App.PolicySet.FileNames[0]}.xml"))
@@ -70,13 +73,17 @@ namespace B2CPolicyEditor.ViewModels
             });
             Save = new DelegateCommand(() =>
             {
-                var projectDir = App.PolicySet.ProjectFolder; // ConfigurationManager.AppSettings["xml:ProjectDir"];
+                var projectDir = App.MRU.ProjectFolder; // ConfigurationManager.AppSettings["xml:ProjectDir"];
                 if (String.IsNullOrEmpty(projectDir))
                 {
-                        var dlg = new System.Windows.Forms.FolderBrowserDialog() { ShowNewFolderButton = true };
-                        //dlg.RootFolder = Environment.SpecialFolder.Desktop;
-                        if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.Cancel) return;
-                    App.PolicySet.ProjectFolder = projectDir = dlg.SelectedPath;
+                    var dlg = new System.Windows.Forms.FolderBrowserDialog()
+                    {
+                        ShowNewFolderButton = true,
+                        SelectedPath = App.MRU.ProjectFolder
+                    };
+                    //dlg.RootFolder = Environment.SpecialFolder.Desktop;
+                    if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.Cancel) return;
+                    App.MRU.ProjectFolder = projectDir = dlg.SelectedPath;
                 };
                 var projFile = $"{projectDir}/PolicySet.json";
                 using (var str = File.CreateText(projFile))

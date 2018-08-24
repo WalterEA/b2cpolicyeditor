@@ -49,6 +49,11 @@ namespace B2CPolicyEditor.ViewModels
             get => String.IsNullOrEmpty(PartnerClaimType) ? Id : PartnerClaimType;
         }
 
+        public string DefaultValue
+        {
+            get => _source.Attribute("DefaultValue")?.Value;
+            set => _source.SetAttributeValue("DefaultValue", value);
+        }
 
         public static IEnumerable<string> AllClaims
         {

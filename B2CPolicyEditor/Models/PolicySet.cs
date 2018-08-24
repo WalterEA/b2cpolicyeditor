@@ -17,14 +17,11 @@ namespace B2CPolicyEditor.Models
     {
         public PolicySet()
         {
-            NamePrefix = "MyPolicy";
+            NamePrefix = "Policy1";
             IEFAppName = "IdentityExperienceFramework";
             IEFProxyAppName = "ProxyIdentityExperienceframework";
             IsDirty = false;
         }
-        [JsonIgnore]
-        public string ProjectFolder { get; set; }
-
         [JsonIgnore]
         public bool IsDirty { get; set; }
         private string _namePrefix;
@@ -277,7 +274,7 @@ namespace B2CPolicyEditor.Models
                     Guid idGuid;
                     if (Guid.TryParse(idVal, out idGuid))
                         return idVal;
-                } catch(NullReferenceException)
+                } catch(InvalidOperationException ex)
                 {
                     // ignore - returninmg empty below
                 }
@@ -311,7 +308,7 @@ namespace B2CPolicyEditor.Models
                     if (Guid.TryParse(idVal, out idGuid))
                         return idVal;
                 }
-                catch (NullReferenceException)
+                catch (InvalidOperationException ex)
                 {
                     // ignore - returninmg empty below
                 }
@@ -347,13 +344,13 @@ namespace B2CPolicyEditor.Models
         {
             SetPolicyHeader(_base, FileNames[0]);
             //SetPolicyHeader(_extension, "Ext", "Base");
-            _base.Save($"{ProjectFolder}/{FileNames[0]}.xml");
+            _base.Save($"{App.MRU.ProjectFolder}/{FileNames[0]}.xml");
             // _extension.Root.Save("extension.xml");
             var i = 1; // 0 == base policy
             foreach (var j in _journeys)
             {
                 SetPolicyHeader(j, FileNames[i], FileNames[0]);
-                j.Save($"{ProjectFolder}/{FileNames[i]}.xml");
+                j.Save($"{App.MRU.ProjectFolder}/{FileNames[i]}.xml");
                 ++i;
             }
             IsDirty = false;

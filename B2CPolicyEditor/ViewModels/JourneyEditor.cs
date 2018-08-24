@@ -41,10 +41,10 @@ namespace B2CPolicyEditor.ViewModels
             };
             var sendStep = Steps.Last();
             if (sendStep.StepType != "SendClaims") throw new ApplicationException("Last journey step must be SendClaims.");
-            var rps = App.PolicySet
-                .Journeys.Where(j =>
-                    j.Root.Element(Constants.dflt + "RelyingParty")
-                        .Element(Constants.dflt + "DefaultJourney").Attribute("ReferenceId").Value == journey.Attribute("Id").Value);
+            //var rps = App.PolicySet
+            //    .Journeys.Where(j =>
+            //        j.Root.Element(Constants.dflt + "RelyingParty")
+            //            .Element(Constants.dflt + "DefaultJourney").Attribute("ReferenceId").Value == journey.Attribute("Id").Value);
         }
         XElement _journey;
         public ObservableCollection<JourneyStep> Steps { get; private set; }

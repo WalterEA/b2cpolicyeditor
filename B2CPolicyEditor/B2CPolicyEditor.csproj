@@ -90,6 +90,7 @@
     <Compile Include="ViewModels\ClaimUsage.cs" />
     <Compile Include="ViewModels\CustomAttributes.cs" />
     <Compile Include="ViewModels\JourneyEditor.cs" />
+    <Compile Include="ViewModels\NewJourneyTypeWizard.cs" />
     <Compile Include="ViewModels\NewPolicyLoad.cs" />
     <Compile Include="ViewModels\OAuthConfiguration.cs" />
     <Compile Include="ViewModels\PolicySetup.cs" />
@@ -292,6 +293,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="IdPPolicies\AADMT.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="IdPPolicies\SignInOnly.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
