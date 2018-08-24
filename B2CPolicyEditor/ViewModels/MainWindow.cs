@@ -243,7 +243,7 @@ namespace B2CPolicyEditor.ViewModels
                     cp.Command = new DelegateCommand((obj) => DetailView = new Views.OAuthConfiguration(obj));
                 else if (protocolName == "SAML2")
                     cp.Command = new DelegateCommand((obj) => DetailView = new Views.SAMLIdP() { DataContext = new ViewModels.SAMLIdP((XElement)obj) });
-                else // AAD?
+                else // AAD? or local account!
                 {
                     var meta = el.Element(Constants.dflt + "Metadata");
                     if (meta != null)

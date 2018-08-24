@@ -108,6 +108,9 @@
     <Compile Include="Views\Claims.xaml.cs">
       <DependentUpon>Claims.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ClaimUsage.xaml.cs">
+      <DependentUpon>ClaimUsage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ConfigureAADIdP.xaml.cs">
       <DependentUpon>ConfigureAADIdP.xaml</DependentUpon>
     </Compile>
@@ -165,6 +168,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Claims.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ClaimUsage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -9,58 +9,16 @@
       d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-        <!--<Style TargetType="ComboBox" x:Key="ComboBoxDisplay">
-            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource Self}, Path=DataContext.AllClaims}"/>
-            <Setter Property="IsReadOnly" Value="True"/>
-        </Style>
-        <Style TargetType="ComboBox" x:Key="ComboBoxEdit">
-            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource Self}, Path=DataContext.AllClaims}"/>
-            --><!--<Setter Property="DisplayMemberPath" Value="Id" />--><!--
-        </Style>-->
-        <Style TargetType="ComboBox" x:Key="ComboBoxDisplay">
-            <Setter Property="ItemsSource" Value="{x:Static vms:ClaimUsage.AllClaims}"/>
-            <Setter Property="IsReadOnly" Value="True"/>
-        </Style>
-        <Style TargetType="ComboBox" x:Key="ComboBoxEdit">
-            <Setter Property="ItemsSource" Value="{x:Static vms:ClaimUsage.AllClaims}"/>
-            <!--<Setter Property="DisplayMemberPath" Value="Id" />-->
-        </Style>
     </UserControl.Resources>
-
     <TabControl>
         <TabItem Header="Inputs">
-            <DataGrid Grid.Row="1" ItemsSource="{Binding InputClaims}" AutoGenerateColumns="False" >
-                <DataGrid.Columns>
-                    <DataGridComboBoxColumn Header="Name" SelectedItemBinding="{Binding Id}" 
-                                            ElementStyle="{StaticResource ComboBoxDisplay}" 
-                                            EditingElementStyle="{StaticResource ComboBoxEdit}"/>
-                    <DataGridTextColumn Binding="{Binding PartnerClaimType}" Header="Partner claim id" />
-                    <DataGridTextColumn Binding="{Binding DefaultValue}" Header="Default value" />
-                    <DataGridCheckBoxColumn Binding="{Binding IsRequired}" Header="Is required?"/>
-                </DataGrid.Columns>
-            </DataGrid>
+            <local:ClaimUsage DataContext="{Binding InputClaims}"/>
         </TabItem>
         <TabItem Header="Outputs">
-            <DataGrid Grid.Row="4" ItemsSource="{Binding OutputClaims}" AutoGenerateColumns="False" >
-                <DataGrid.Columns>
-                    <DataGridComboBoxColumn Header="Name" SelectedItemBinding="{Binding Id}" 
-                                            ElementStyle="{StaticResource ComboBoxDisplay}" 
-                                            EditingElementStyle="{StaticResource ComboBoxEdit}"/>
-                    <DataGridTextColumn Binding="{Binding PartnerClaimType}" />
-                    <DataGridCheckBoxColumn Binding="{Binding IsRequired}" />
-                </DataGrid.Columns>
-            </DataGrid>
+            <local:ClaimUsage DataContext="{Binding OutputClaims}" />
         </TabItem>
         <TabItem Header="Persisted" Visibility="{Binding IsPersistedVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <DataGrid Grid.Row="7" ItemsSource="{Binding PersistedClaims}" AutoGenerateColumns="False" Visibility="{Binding IsPersistedVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <DataGrid.Columns>
-                    <DataGridComboBoxColumn Header="Name" SelectedItemBinding="{Binding Id}" 
-                                            ElementStyle="{StaticResource ComboBoxDisplay}" 
-                                            EditingElementStyle="{StaticResource ComboBoxEdit}"/>
-                    <DataGridTextColumn Binding="{Binding PartnerClaimType}" />
-                    <DataGridCheckBoxColumn Binding="{Binding IsRequired}" />
-                </DataGrid.Columns>
-            </DataGrid>
+            <local:ClaimUsage DataContext="{Binding PersistedClaims}" />
         </TabItem>
     </TabControl>
 </UserControl>

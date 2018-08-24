@@ -209,9 +209,18 @@ namespace B2CPolicyEditor.ViewModels
         private string _AppSecret;
         public string AppSecretName
         {
-            get => _tp.Element(Constants.dflt + "CryptographicKeys")
-                    .Elements(Constants.dflt + "Key")
-                        .First(k => k.Attribute("Id").Value == "client_secret").Attribute("StorageReferenceId").Value;
+            get
+            {
+                try
+                {
+                    return _tp.Element(Constants.dflt + "CryptographicKeys")
+                        .Elements(Constants.dflt + "Key")
+                            .First(k => k.Attribute("Id").Value == "client_secret").Attribute("StorageReferenceId").Value;
+                } catch
+                {
+                    return null;
+                }
+            }
             set
             {
                 _tp.Element(Constants.dflt + "CryptographicKeys")
