@@ -32,15 +32,18 @@ namespace B2CPolicyEditor.ViewModels
         { 
             get
             {
-                return (new Dictionary<string, string>()
+                try
                 {
-                    {"Facebook", "https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-get-started-custom#next-steps" },
-                    {"Google", "https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-custom-setup-goog-idp" },
-                    {"Microsoft Account", "https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-custom-setup-msa-idp" },
-                    {"LinkedIn", "https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-custom-setup-li-idp" },
-                    {"Twitter", "https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-custom-setup-twitter-idp" },
+                    return (new Dictionary<string, string>()
+                    {
+                        {"Facebook", "https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-get-started-custom#next-steps" },
+                        {"Google", "https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-custom-setup-goog-idp" },
+                        {"Microsoft Account", "https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-custom-setup-msa-idp" },
+                        {"LinkedIn", "https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-custom-setup-li-idp" },
+                        {"Twitter", "https://docs.microsoft.com/en-us/azure/active-directory-b2c/active-directory-b2c-custom-setup-twitter-idp" },
 
-                })[DisplayName];
+                    })[DisplayName];
+                } catch { return null; }
             }
         }
 
