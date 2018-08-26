@@ -68,7 +68,8 @@ namespace B2CPolicyEditor.ViewModels
                     //    sourceDir = ConfigurationManager.AppSettings["xml:Base"];
                     //App.PolicySet.Load(sourceDir);
                     App.PolicySet.Load(projectDir);
-                    PopulateTreeView();
+                    if (App.PolicySet.Base != null)
+                        PopulateTreeView();
                 }
             });
             Save = new DelegateCommand(() =>

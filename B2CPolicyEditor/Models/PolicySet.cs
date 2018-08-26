@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
 using B2CPolicyEditor.Extensions;
@@ -97,7 +98,10 @@ namespace B2CPolicyEditor.Models
                 } catch(Exception ex) 
                 {
                     if (_base == null)
+                    {
+                        ViewModels.MainWindow.Trace.Add(new ViewModels.TraceItem() { Msg = "Base policy not found." });
                         throw;
+                    }
                 }
             } else
             { 
@@ -112,46 +116,64 @@ namespace B2CPolicyEditor.Models
                     {
                         var fName = file.Split('\\').Last();
                         fName = fName.Remove(fName.Length - 4);
-                        var doc = XDocument.Load(str);
-                        doc.Changed += (s, e) => { IsDirty = true; };
-                        //TODO: Getting errors, disable for now
-                        //doc.Validate(schemas, (o, e) =>
-                        //{
-                        //    throw new ApplicationException($"Error validating {file}: {e.Message}");
-                        //});
-                        var baseDoc = doc.Root.Element(Constants.dflt + "BasePolicy");
-                        if (baseDoc == null)
+                        XDocument doc = null;
+                        try
                         {
-                            if (_base != null)
-                                throw new Exception($"Multiple base files found while processing {file}");
-                            _base = doc;
-                            if (FileNames.Count == 0)
-                                FileNames.Add(fName);
-                            else
-                                FileNames.Insert(0, fName);
-                        }
-                        else
-                        {
-                            if (doc.Root.Element(Constants.dflt + "RelyingParty") != null)
+                            doc = XDocument.Load(str);
+                            doc.Changed += (s, e) => { IsDirty = true; };
+                            //TODO: Getting errors, disable for now
+                            //doc.Validate(schemas, (o, e) =>
+                            //{
+                            //    throw new ApplicationException($"Error validating {file}: {e.Message}");
+                            //});
+                            var baseDoc = doc.Root.Element(Constants.dflt + "BasePolicy");
+                            if (baseDoc == null)
                             {
-                                _journeys.Add(doc);
-                                FileNames.Add(fName);
+                                if (_base != null)
+                                    throw new Exception($"Multiple base files found while processing {file}");
+                                _base = doc;
+                                if (FileNames.Count == 0)
+                                    FileNames.Add(fName);
+                                else
+                                    FileNames.Insert(0, fName);
                             }
+                            else
+                            {
+                                if (doc.Root.Element(Constants.dflt + "RelyingParty") != null)
+                                {
+                                    _journeys.Add(doc);
+                                    FileNames.Add(fName);
+                                }
+                            }
+                        } catch (XmlException ex)
+                        {
+                            ViewModels.MainWindow.Trace.Add(new ViewModels.TraceItem() { Msg = $"Xml format exception: {ex.Message}" });
                         }
                     }
                 }
             }
             if (_base == null)
-                throw new ApplicationException($"Base policy not found in folder: {baseDir}");
+            {
+                ViewModels.MainWindow.Trace.Add(new ViewModels.TraceItem() { Msg = "Base policy not found" });
+                //throw new ApplicationException($"Base policy not found in folder: {baseDir}");
+            }
+            
             IsDirty = false;
         }
         private XDocument LoadFromStarterPack(string baseDir, string fileName)
         {
             var name = $"{baseDir}{fileName}.xml";
             ViewModels.MainWindow.Trace.Add(new ViewModels.TraceItem() { Msg = $"Loading {name}" });
-            var doc = XDocument.Load($"{baseDir}{fileName}.xml");
-            FileNames.Add(fileName);
-            doc.Changed += (s, e) => IsDirty = true;
+            XDocument doc = null;
+            try
+            {
+                doc = XDocument.Load($"{baseDir}{fileName}.xml");
+                FileNames.Add(fileName);
+                doc.Changed += (s, e) => IsDirty = true;
+            } catch(Exception ex)
+            {
+
+            }
             return doc;
         }
         [JsonIgnore]
