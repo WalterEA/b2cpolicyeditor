@@ -25,6 +25,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto"  />
+                <RowDefinition Height="Auto"  />                
                 <RowDefinition  />
             </Grid.RowDefinitions>
             <TextBlock Text="Policy name prefix" />
@@ -47,7 +48,7 @@
             <TextBlock Grid.Column="2" Grid.Row="6" Text="{Binding ExtensionAppId}" />
             <TextBlock Grid.Column="2" Grid.Row="7" Text="{Binding ExtensionObjId}" />
 
-            <Button Grid.Column="2" Grid.Row="8" Content="Configure B2C..." Command="{Binding VerifyB2CSetupCmd}" 
+            <Button Grid.ColumnSpan="3" Grid.Row="8" Content="Configure B2C..." Command="{Binding VerifyB2CSetupCmd}" 
                     VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="10"
                     ToolTip="Connect to your B2C tenant and update the policy with required application ids. Create them in the tenant if needed."/>
         </Grid>

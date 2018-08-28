@@ -30,6 +30,7 @@ namespace B2CPolicyEditor.ViewModels
                     var dlg = new Views.NewPolicyLoad() { DataContext = dlgVm };
                     dlgVm.Closing += () => dlg.Close();
                     dlg.ShowDialog();
+                    App.MRU.ProjectFolder = String.Empty;
                     UpdateTree();
                 }
             });
@@ -154,16 +155,33 @@ namespace B2CPolicyEditor.ViewModels
                         break;
                 }
             });
-            NewJourney = new DelegateCommand(() =>
+            AddJourneyType = new DelegateCommand(() =>
             {
-                var header = Items.FirstOrDefault(i => i.Category == TreeViewVMItem.TreeViewItemCatorgies.Journeys);
-                header.Items.Add(new TreeViewVMItem()
+                var journeys = App.PolicySet.Base.Root.Element(Constants.dflt + "UserJourneys");
+                if (journeys == null)
                 {
-                    Name = "Journey",
+                    App.PolicySet.Base.Root.Add(new XElement(Constants.dflt + "UserJourneys"));
+                    journeys = App.PolicySet.Base.Root.Element(Constants.dflt + "UserJourneys");
+                }
+                var name = "Journey1";
+                var journey = new XElement(Constants.dflt + "UserJourney", 
+                    new XAttribute("Id", name),
+                    new XElement(Constants.dflt + "OrchestrationSteps"));
+                journeys.Add(journey);
+                var header = Items.FirstOrDefault(i => i.Category == TreeViewVMItem.TreeViewItemCatorgies.Journeys);
+                header.Items.Add(new JourneyTypeItem()
+                {
                     Category = TreeViewVMItem.TreeViewItemCatorgies.Detail,
-                    Command = new DelegateCommand((obj) => DetailView = new Views.JourneyEditor() { DataContext = new ViewModels.JourneyEditor((XElement)obj) }),
-                    DetailType = TreeViewVMItem.TreeViewItemDetails.Journey
+                    OnSelect = new DelegateCommand((obj) => DetailView = new Views.JourneyEditor() { DataContext = new ViewModels.JourneyEditor((XElement)obj) }),
+                    DetailType = TreeViewVMItem.TreeViewItemDetails.Journey,
+                    DataSource = journey,
+                    IsNameFixed = false,
                 });
+            });
+            AddJourneyStep = new DelegateCommand(() =>
+            {
+                var wiz = new Views.AddJourneyStepWizard() { DataContext = new JourneyEditor(_selectedArtifact.DataSource) };
+                wiz.ShowDialog();
             });
 
             PolicySetup = new DelegateCommand(() => DetailView = new Views.PolicySetup());
@@ -184,13 +202,13 @@ namespace B2CPolicyEditor.ViewModels
                 new TreeViewVMItem()
                 {
                     Name = "Policy set setup",
-                    Command = PolicySetup,
+                    OnSelect = PolicySetup,
                     Category = TreeViewVMItem.TreeViewItemCatorgies.Other
                 },
                 new TreeViewVMItem()
                 {
                     Name = "Claims",
-                    Command = ShowClaims,
+                    OnSelect = ShowClaims,
                     Category = TreeViewVMItem.TreeViewItemCatorgies.Other
                 },
                 new TreeViewVMItem()
@@ -239,11 +257,11 @@ namespace B2CPolicyEditor.ViewModels
                     cp.Name = attr.Value;
                 var domain = el.Parent.Parent.Element(Constants.dflt + "Domain");
                 if ((domain != null) && (new string[] { "facebook.com", "google.com", "live.com", "google.com", "linkedin.com", "twitter.com" }).Contains(domain.Value))
-                    cp.Command = new DelegateCommand((obj) => DetailView = new Views.SocialIdP() { DataContext = new ViewModels.SocialIdP((XElement)obj) });
+                    cp.OnSelect = new DelegateCommand((obj) => DetailView = new Views.SocialIdP() { DataContext = new ViewModels.SocialIdP((XElement)obj) });
                 else if (protocolName == "OAuth2")
-                    cp.Command = new DelegateCommand((obj) => DetailView = new Views.OAuthConfiguration(obj));
+                    cp.OnSelect = new DelegateCommand((obj) => DetailView = new Views.OAuthConfiguration(obj));
                 else if (protocolName == "SAML2")
-                    cp.Command = new DelegateCommand((obj) => DetailView = new Views.SAMLIdP() { DataContext = new ViewModels.SAMLIdP((XElement)obj) });
+                    cp.OnSelect = new DelegateCommand((obj) => DetailView = new Views.SAMLIdP() { DataContext = new ViewModels.SAMLIdP((XElement)obj) });
                 else // AAD? or local account!
                 {
                     var meta = el.Element(Constants.dflt + "Metadata");
@@ -251,7 +269,7 @@ namespace B2CPolicyEditor.ViewModels
                     {
                         var sts = meta.Elements(Constants.dflt + "Item").Where(i => i.Attribute("Key")?.Value == "METADATA").First();
                         if ((sts != null) && (sts.Value.StartsWith("https://login.microsoftonline.com/")))
-                            cp.Command = new DelegateCommand((obj) => DetailView = new Views.AADIdP() { DataContext = new ViewModels.AADIdP((XElement)obj) });
+                            cp.OnSelect = new DelegateCommand((obj) => DetailView = new Views.AADIdP() { DataContext = new ViewModels.AADIdP((XElement)obj) });
                     }
                 }
                 cps.Add(cp);
@@ -264,11 +282,10 @@ namespace B2CPolicyEditor.ViewModels
             var js = new ObservableCollection<TreeViewVMItem>();
             foreach(var j in App.PolicySet.Base.Root.Element(Constants.dflt + "UserJourneys").Elements())
             {
-                js.Add(new TreeViewVMItem()
+                js.Add(new JourneyTypeItem()
                 {
-                    Name = j.Attribute("Id").Value,
                     DataSource = j,
-                    Command = new DelegateCommand((obj) => DetailView = new Views.JourneyEditor() { DataContext = new ViewModels.JourneyEditor((XElement)obj) }),
+                    OnSelect = new DelegateCommand((obj) => DetailView = new Views.JourneyEditor() { DataContext = new ViewModels.JourneyEditor((XElement)obj) }),
                     Category = TreeViewVMItem.TreeViewItemCatorgies.Detail,
                     DetailType = TreeViewVMItem.TreeViewItemDetails.Journey,
                     Items = GetJourneyTokens(j),
@@ -288,8 +305,8 @@ namespace B2CPolicyEditor.ViewModels
                     ts.Add(new TreeViewVMItem()
                     {
                         Name = journeyDoc.Root.Attribute("PolicyId").Value.Substring(7),  // skip B2C_1A_
-                        DataSource = journeyDoc,
-                        Command = new DelegateCommand((obj) => DetailView = new Views.TokenEditor() { DataContext = new ViewModels.TokenEditor((XDocument)obj) }),
+                        DataSource = journeyDoc.Root,
+                        OnSelect = new DelegateCommand((obj) => DetailView = new Views.TokenEditor() { DataContext = new ViewModels.TokenEditor((XDocument)obj) }),
                         Category = TreeViewVMItem.TreeViewItemCatorgies.Detail,
                         DetailType = TreeViewVMItem.TreeViewItemDetails.Token,
                     });
@@ -330,11 +347,12 @@ namespace B2CPolicyEditor.ViewModels
             {
                 if (Set(ref _selectedArtifact, value))
                 {
-                    if ((_selectedArtifact != null) && (_selectedArtifact.Command != null))
-                        _selectedArtifact.Command.Execute(_selectedArtifact.DataSource);
+                    if ((_selectedArtifact != null) && (_selectedArtifact.OnSelect != null))
+                        _selectedArtifact.OnSelect.Execute(_selectedArtifact.DataSource);
                     else
                         DetailView = null;
                     ((DelegateCommand)DeleteItem).Enabled = ((_selectedArtifact != null) && (SelectedArtifact.Category == TreeViewVMItem.TreeViewItemCatorgies.Detail));
+                    ((DelegateCommand)AddJourneyStep).Enabled = ((_selectedArtifact != null) && (_selectedArtifact is JourneyTypeItem));
                 }
             }
         }
@@ -365,9 +383,10 @@ namespace B2CPolicyEditor.ViewModels
         public ICommand Save { get; private set; }
         public ICommand TenantDetails { get; private set; }
         public ICommand AddIdP { get; private set; }
+        public ICommand AddJourneyType { get; private set; }
+        public ICommand AddJourneyStep { get; private set; }
         //public ICommand AddCustomIdP { get; private set; }
         public ICommand Generate { get; private set; }
-        public ICommand NewJourney { get; private set; }
 
         static ObservableCollection<TraceItem> _trace;
         public static ObservableCollection<TraceItem> Trace
@@ -405,12 +424,13 @@ namespace B2CPolicyEditor.ViewModels
     {
         public TreeViewVMItem()
         {
+            IsNameFixed = true;
         }
         internal enum TreeViewItemCatorgies { Other, IdPs, Claims, Journeys, Detail };
         internal enum TreeViewItemDetails {  Other, IdP, Claim, Journey, Token }
         internal TreeViewItemCatorgies Category { get; set; }
         internal TreeViewItemDetails DetailType { get; set; }
-        public string Name
+        public virtual string Name
         {
             get { return _Name; }
             set
@@ -419,10 +439,11 @@ namespace B2CPolicyEditor.ViewModels
             }
         }
         private string _Name;
+        public bool IsNameFixed { get; set; }
 
-        public ICommand Command { get; set; }
+        public ICommand OnSelect { get; set; }
         public ObservableCollection<TreeViewVMItem> Items { get; set; }
-        public object DataSource
+        public XElement DataSource
         {
             get { return _DataSource; }
             set
@@ -430,8 +451,18 @@ namespace B2CPolicyEditor.ViewModels
                 Set(ref _DataSource, value);
             }
         }
-        private object _DataSource;
+        private XElement _DataSource;
     }
+
+    public class JourneyTypeItem: TreeViewVMItem
+    {
+        public override string Name
+        {
+            get => DataSource.Attribute("Id").Value;
+            set => DataSource.SetAttributeValue("Id", value);
+        }
+    }
+
 
     public class TraceItem
     {

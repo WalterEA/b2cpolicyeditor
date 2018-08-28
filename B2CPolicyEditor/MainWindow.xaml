@@ -33,8 +33,10 @@
                 <ToolBar>
                     <Button Content="New..." Command="{Binding NewPolicy}" Margin="10" ToolTip="Download one of the Starter Pack policy sets" />                
                     <Button Content="Load..." Command="{Binding Open}" Margin="10" ToolTip="Read existing policy set (base and journeys) from a folder" />
-                    <Button Content="Save" Command="{Binding Save}" Margin="10" ToolTip="Save current policy set to a folder" />
+                    <Button Content="Save..." Command="{Binding Save}" Margin="10" ToolTip="Save current policy set to a folder" />
                     <Button Content="Add IdP..." Command="{Binding AddIdP}" Margin="10" ToolTip="Add a new Identity Provider (social or custom)" />
+                    <Button Content="Add journey type..." Command="{Binding AddJourneyType}" Margin="10" ToolTip="Create a new journey" />
+                    <Button Content="Add journey step..." Command="{Binding AddJourneyStep}" Margin="10" ToolTip="Add new journey step to journey" />
                     <!--<StackPanel Orientation="Horizontal" Margin="10">
                         <TextBlock Text="Add social IdP:" Margin="0,2,4,0"/>
                         <ComboBox>
@@ -56,22 +58,20 @@
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="6" />
                     <ColumnDefinition Width="4*" />
                 </Grid.ColumnDefinitions>
-                <StackPanel Orientation="Vertical">
-                    <TreeView ItemsSource="{Binding Items}" ItemTemplate="{StaticResource ArtifactParentTemplate}" 
-                              ext:TreeViewHelper.TreeViewSelectedItem="{Binding SelectedArtifact, Mode=TwoWay}"
-                              VerticalAlignment="Stretch">
-                        <TreeView.ItemContainerStyle>
-                            <Style TargetType="{x:Type TreeViewItem}">
-                                <Setter Property="IsExpanded" Value="True"/>
-                                <Setter Property="ContextMenu" Value="{StaticResource TreeItemMenu}" />
-                            </Style>
-                        </TreeView.ItemContainerStyle>
-                    </TreeView>
-                </StackPanel>
-                <GridSplitter Grid.Column="1" Width="6" VerticalAlignment="Stretch" />
+                <TreeView ItemsSource="{Binding Items}" ItemTemplate="{StaticResource ArtifactParentTemplate}" 
+                            ext:TreeViewHelper.TreeViewSelectedItem="{Binding SelectedArtifact, Mode=TwoWay}"
+                            VerticalAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                    <TreeView.ItemContainerStyle>
+                        <Style TargetType="{x:Type TreeViewItem}">
+                            <Setter Property="IsExpanded" Value="True"/>
+                            <Setter Property="ContextMenu" Value="{StaticResource TreeItemMenu}" />
+                        </Style>
+                    </TreeView.ItemContainerStyle>
+                </TreeView>
+                <GridSplitter Grid.Column="1" VerticalAlignment="Stretch"  HorizontalAlignment="Stretch"/>
                 <Border Grid.Column="2" BorderThickness="0.5" BorderBrush="Black" Padding="4">
                     <Frame x:Name="_rightPane" NavigationUIVisibility="Hidden" Content="{Binding DetailView}"/>
                 </Border>

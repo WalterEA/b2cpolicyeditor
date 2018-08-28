@@ -296,7 +296,7 @@ namespace B2CPolicyEditor.Models
                     Guid idGuid;
                     if (Guid.TryParse(idVal, out idGuid))
                         return idVal;
-                } catch(InvalidOperationException ex)
+                } catch(NullReferenceException ex)
                 {
                     // ignore - returninmg empty below
                 }
@@ -330,7 +330,7 @@ namespace B2CPolicyEditor.Models
                     if (Guid.TryParse(idVal, out idGuid))
                         return idVal;
                 }
-                catch (InvalidOperationException ex)
+                catch (NullReferenceException ex)
                 {
                     // ignore - returninmg empty below
                 }
