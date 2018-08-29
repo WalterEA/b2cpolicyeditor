@@ -47,6 +47,13 @@ namespace B2CPolicyEditor.ViewModels
             //            .Element(Constants.dflt + "DefaultJourney").Attribute("ReferenceId").Value == journey.Attribute("Id").Value);
         }
         XElement _journey;
+
+        public string Id
+        {
+            get => _journey.Attribute("Id").Value;
+            set => _journey.SetAttributeValue("Id", value);
+        }
+
         public ObservableCollection<JourneyStep> Steps { get; private set; }
         public object SelectedArtifact
         {

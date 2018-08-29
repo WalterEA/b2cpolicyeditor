@@ -57,9 +57,15 @@
             <ColumnDefinition />            
         </Grid.ColumnDefinitions>
         <GridSplitter  Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-        <TreeView ItemsSource="{Binding Steps}" ItemTemplate="{StaticResource StepTemplate}" 
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <TextBox Text="{Binding Id}" Margin="8" HorizontalAlignment="Center" MinWidth="300"/>
+            <TreeView Grid.Row="1" ItemsSource="{Binding Steps}" ItemTemplate="{StaticResource StepTemplate}" 
                   ext:TreeViewHelper.TreeViewSelectedItem="{Binding SelectedArtifact, Mode=TwoWay}"/>
-
+        </Grid>
         <local:TechnicalProfileClaims  Grid.Column="2" DataContext="{Binding ClaimsUsage}" />
     </Grid>
 </Page>
