@@ -30,7 +30,7 @@ namespace B2CPolicyEditor.ViewModels
                 }
             }
         }
-        XElement _tp;
+        protected XElement _tp;
         public ObservableCollection<ClaimUsage> InputClaims { get; set; }
         public ObservableCollection<ClaimUsage> OutputClaims { get; set; }
         public ObservableCollection<ClaimUsage> PersistedClaims { get; set; }

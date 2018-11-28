@@ -109,6 +109,24 @@ namespace B2CPolicyEditor.ViewModels
                     SelectArtifact(vm.CreatedIdP.Element(Constants.dflt + "TechnicalProfiles").Element(Constants.dflt + "TechnicalProfile"));
                 }
             });
+            AddRESTApi = new DelegateCommand(() =>
+            {
+                var restAPIs = App.PolicySet.Base.Root
+                    .element("ClaimsProviders")
+                        .elements("ClaimsProvider")
+                            .FirstOrDefault(el => el.Attribute("DisplayName")?.Value == "REST APIs");
+                if (restAPIs == null)
+                {
+                    restAPIs = new XElement(Constants.dflt + "ClaimsProvider",
+                            new XElement(Constants.dflt + "DisplayName", "REST APIs"),
+                            new XElement(Constants.dflt + "TechnicalProfiles"));
+                    App.PolicySet.Base.Root.element("ClaimsProviders").Add(restAPIs);
+                }
+                var restAPI = XElement.Load(System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceStream("B2CPolicyEditor.IdPPolicies.REST.xml"));
+                restAPIs.element("TechnicalProfiles").Add(restAPI);
+                PopulateTreeView();
+                SelectedArtifact = FindArtifact(restAPI, _items);
+            });
             DeleteItem = new DelegateCommand(() =>
             {
                 if ((SelectedArtifact == null) || (SelectedArtifact.Category != TreeViewVMItem.TreeViewItemCatorgies.Detail))
@@ -323,14 +341,25 @@ namespace B2CPolicyEditor.ViewModels
                 };
                 foreach(var tp in el.Element(Constants.dflt + "TechnicalProfiles").Elements(Constants.dflt + "TechnicalProfile"))
                 {
-                    cp.Items.Add(new TreeViewVMItem()
-                    {
-                        Name = tp.Attribute("Id").Value,
-                        DataSource = tp,
-                        Category = TreeViewVMItem.TreeViewItemCatorgies.Detail,
-                        DetailType = TreeViewVMItem.TreeViewItemDetails.TechnicalProfile,
-                        OnSelect = new DelegateCommand((obj) => DetailView = new Page() { Content = new Views.TechnicalProfileClaims() { DataContext = new TechnicalProfileClaims((XElement) obj) } } )
-                    });
+                    var protocol = tp.element("Protocol");
+                    if ((protocol != null) && (protocol.Attribute("Handler") != null) && protocol.Attribute("Handler").Value.StartsWith("Web.TPEngine.Providers.RestfulProvider"))
+                        cp.Items.Add(new TreeViewVMItem()
+                        {
+                            Name = tp.Attribute("Id").Value,
+                            DataSource = tp,
+                            Category = TreeViewVMItem.TreeViewItemCatorgies.Detail,
+                            DetailType = TreeViewVMItem.TreeViewItemDetails.TechnicalProfile,
+                            OnSelect = new DelegateCommand((obj) => DetailView = new Page() { Content = new Views.RESTDetails() { DataContext = new RESTDetails((XElement)obj) } })
+                        });
+                    else
+                        cp.Items.Add(new TreeViewVMItem()
+                        {
+                            Name = tp.Attribute("Id").Value,
+                            DataSource = tp,
+                            Category = TreeViewVMItem.TreeViewItemCatorgies.Detail,
+                            DetailType = TreeViewVMItem.TreeViewItemDetails.TechnicalProfile,
+                            OnSelect = new DelegateCommand((obj) => DetailView = new Page() { Content = new Views.TechnicalProfileClaims() { DataContext = new TechnicalProfileClaims((XElement) obj) } } )
+                        });
                 }
                 cps.Add(cp);
             }
@@ -340,18 +369,24 @@ namespace B2CPolicyEditor.ViewModels
         private ObservableCollection<TreeViewVMItem> GetUserJourneys()
         {
             var js = new ObservableCollection<TreeViewVMItem>();
-            foreach(var j in App.PolicySet.Base.Root.Element(Constants.dflt + "UserJourneys").Elements())
+            try
             {
-                js.Add(new JourneyTypeItem()
+                foreach (var j in App.PolicySet.Base.Root.Element(Constants.dflt + "UserJourneys").Elements())
                 {
-                    DataSource = j,
-                    OnSelect = new DelegateCommand((obj) => DetailView = new Views.JourneyEditor() { DataContext = new ViewModels.JourneyEditor((XElement)obj) }),
-                    Category = TreeViewVMItem.TreeViewItemCatorgies.Detail,
-                    DetailType = TreeViewVMItem.TreeViewItemDetails.Journey,
-                    Items = GetJourneyTokens(j),
-                });
+                    js.Add(new JourneyTypeItem()
+                    {
+                        DataSource = j,
+                        OnSelect = new DelegateCommand((obj) => DetailView = new Views.JourneyEditor() { DataContext = new ViewModels.JourneyEditor((XElement)obj) }),
+                        Category = TreeViewVMItem.TreeViewItemCatorgies.Detail,
+                        DetailType = TreeViewVMItem.TreeViewItemDetails.Journey,
+                        Items = GetJourneyTokens(j),
+                    });
+                }
+                return js;
+            } catch(NullReferenceException)
+            {
+                return null;
             }
-            return js;
         }
         private ObservableCollection<TreeViewVMItem> GetJourneyTokens(XElement journey)
         {
@@ -438,11 +473,26 @@ namespace B2CPolicyEditor.ViewModels
             get { return _items; }
             set { Set(ref _items, value); }
         }
+        TreeViewVMItem FindArtifact(XElement vm, ObservableCollection<TreeViewVMItem> items)
+        {
+            if (items == null) return null;
+            TreeViewVMItem item = null;
+            foreach(var i in items)
+            {
+                if (i.DataSource == vm)
+                    item = i;
+                else
+                    item = FindArtifact(vm, i.Items);
+                if (item != null) break;
+            }
+            return item;
+        }
         public ICommand NewPolicy { get; private set; }
         public ICommand Open { get; private set; }
         public ICommand Save { get; private set; }
         public ICommand TenantDetails { get; private set; }
         public ICommand AddIdP { get; private set; }
+        public ICommand AddRESTApi { get; private set; }
         public ICommand AddJourneyType { get; private set; }
         public ICommand AddJourneyStep { get; private set; }
         //public ICommand AddCustomIdP { get; private set; }

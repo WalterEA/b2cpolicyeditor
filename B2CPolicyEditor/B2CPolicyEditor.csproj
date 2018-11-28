@@ -95,6 +95,7 @@
     <Compile Include="ViewModels\OAuthConfiguration.cs" />
     <Compile Include="ViewModels\PolicySetup.cs" />
     <Compile Include="ViewModels\MainWindow.cs" />
+    <Compile Include="ViewModels\RESTDetails.cs" />
     <Compile Include="ViewModels\SAMLIdP.cs" />
     <Compile Include="ViewModels\SocialIdP.cs" />
     <Compile Include="ViewModels\TechnicalProfileClaims.cs" />
@@ -137,6 +138,9 @@
     </Compile>
     <Compile Include="Views\PolicySetup.xaml.cs">
       <DependentUpon>PolicySetup.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RESTDetails.xaml.cs">
+      <DependentUpon>RESTDetails.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SAMLIdP.xaml.cs">
       <DependentUpon>SAMLIdP.xaml</DependentUpon>
@@ -214,6 +218,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\PolicySetup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RESTDetails.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -322,6 +330,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Interfaces\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="IdPPolicies\REST.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

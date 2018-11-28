@@ -126,5 +126,20 @@ namespace B2CPolicyEditor.Extensions
                     new XElement(Constants.dflt + "Item", new XAttribute("Key", keyName), value)));
             }
         }
+        public static string GetMetadataValue(this XElement parent, string keyName)
+        {
+            var metadata = parent.Element(Constants.dflt + "Metadata");
+            if (metadata == null) return string.Empty;
+            return metadata.Elements().First(el => el.Attribute("Key").Value == keyName)?.Value;
+        }
+        public static XElement element(this XElement parent, string name)
+        {
+            var ret = parent.Element(Constants.dflt + name);
+            return ret;
+        }
+        public static IEnumerable<XElement> elements(this XElement parent, string name)
+        {
+            return parent.Elements(Constants.dflt + name);
+        }
     }
 }

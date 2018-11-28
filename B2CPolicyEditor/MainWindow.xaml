@@ -43,6 +43,7 @@
                     <Button Content="Load..." Command="{Binding Open}" Margin="10" ToolTip="Read existing policy set (base and journeys) from a folder" />
                     <Button Content="Save..." Command="{Binding Save}" Margin="10" ToolTip="Save current policy set to a folder" />
                     <Button Content="Add IdP..." Command="{Binding AddIdP}" Margin="10" ToolTip="Add a new Identity Provider (social or custom)" />
+                    <Button Content="Add REST API" Command="{Binding AddRESTApi}" Margin="10" ToolTip="Add a new REST API definition" />
                     <Button Content="Add journey type..." Command="{Binding AddJourneyType}" Margin="10" ToolTip="Create a new journey" />
                     <Button Content="Add journey step..." Command="{Binding AddJourneyStep}" Margin="10" ToolTip="Add new journey step to journey" />
                     <!--<StackPanel Orientation="Horizontal" Margin="10">
