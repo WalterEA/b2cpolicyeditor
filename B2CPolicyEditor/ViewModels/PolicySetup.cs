@@ -236,7 +236,7 @@ namespace B2CPolicyEditor.ViewModels
                     "https://graph.windows.net",
                     ConfigurationManager.AppSettings["aad:ClientId"],
                     new Uri("https://b2cpolicyeditor"),
-                    new PlatformParameters(PromptBehavior.Auto));
+                    new PlatformParameters(PromptBehavior.Always));
                 return true;
             }
             catch (Exception ex)

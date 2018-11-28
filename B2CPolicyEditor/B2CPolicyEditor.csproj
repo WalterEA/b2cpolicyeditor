@@ -91,7 +91,6 @@
     <Compile Include="ViewModels\CustomAttributes.cs" />
     <Compile Include="ViewModels\JourneyEditor.cs" />
     <Compile Include="ViewModels\JourneyStep.cs" />
-    <Compile Include="ViewModels\NewJourneyTypeWizard.cs" />
     <Compile Include="ViewModels\NewPolicyLoad.cs" />
     <Compile Include="ViewModels\OAuthConfiguration.cs" />
     <Compile Include="ViewModels\PolicySetup.cs" />
@@ -290,7 +289,9 @@
     <EmbeddedResource Include="IdPPolicies\AAD.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="IdPPolicies\Facebook.xml" />
+    <EmbeddedResource Include="IdPPolicies\Facebook.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="IdPPolicies\Google.xml" />

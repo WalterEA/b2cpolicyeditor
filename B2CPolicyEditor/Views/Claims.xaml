@@ -13,7 +13,7 @@
         <col:ArrayList x:Key="DataTypes">
             <sys:String>string</sys:String>
             <sys:String>int</sys:String>
-            <sys:String>bool</sys:String>
+            <sys:String>boolean</sys:String>
             <sys:String>date</sys:String>
             <sys:String>dateTime</sys:String>
             <sys:String>duration</sys:String>

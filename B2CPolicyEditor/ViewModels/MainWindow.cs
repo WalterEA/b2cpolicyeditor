@@ -109,36 +109,6 @@ namespace B2CPolicyEditor.ViewModels
                     SelectArtifact(vm.CreatedIdP.Element(Constants.dflt + "TechnicalProfiles").Element(Constants.dflt + "TechnicalProfile"));
                 }
             });
-            //AddIdP = new DelegateCommand((p) =>
-            //{
-            //    var header = Items.FirstOrDefault(i => i.Category == TreeViewVMItem.TreeViewItemCatorgies.IdPs);
-            //    var el = PolicyDocExtensions.CreateIdP((string) p);
-            //    var newItem = new TreeViewVMItem()
-            //    {
-            //        DataSource = el,
-            //        Name = el.Element(Constants.dflt + "DisplayName").Value,
-            //        Command = new DelegateCommand((obj) => DetailView = new Views.SAMLIdP() { DataContext = new ViewModels.SAMLIdP((XElement)obj) }),
-            //        Category = TreeViewVMItem.TreeViewItemCatorgies.Detail,
-            //        DetailType = TreeViewVMItem.TreeViewItemDetails.IdP
-            //    };
-            //    header.Items.Add(newItem);
-            //    SelectedArtifact = newItem;
-            //});
-            //AddCustomIdP = new DelegateCommand((p) =>
-            //{
-            //    var header = Items.FirstOrDefault(i => i.Category == TreeViewVMItem.TreeViewItemCatorgies.IdPs);
-            //    var el = PolicyDocExtensions.CreateIdP((string)p);
-            //    var newItem = new TreeViewVMItem()
-            //    {
-            //        DataSource = el.Element(Constants.dflt + "TechnicalProfiles").Element(Constants.dflt + "TechnicalProfile"),
-            //        Name = el.Element(Constants.dflt + "DisplayName").Value,
-            //        Command = new DelegateCommand((obj) => DetailView = new Views.SAMLIdP() { DataContext = new ViewModels.SAMLIdP((XElement)obj) }),
-            //        Category = TreeViewVMItem.TreeViewItemCatorgies.Detail,
-            //        DetailType = TreeViewVMItem.TreeViewItemDetails.IdP
-            //    };
-            //    header.Items.Add(newItem);
-            //    SelectedArtifact = newItem;
-            //});
             DeleteItem = new DelegateCommand(() =>
             {
                 if ((SelectedArtifact == null) || (SelectedArtifact.Category != TreeViewVMItem.TreeViewItemCatorgies.Detail))
@@ -146,10 +116,56 @@ namespace B2CPolicyEditor.ViewModels
                 switch(SelectedArtifact.DetailType)
                 {
                     case TreeViewVMItem.TreeViewItemDetails.IdP:
-                        App.PolicySet.RemoveIdP((XElement) SelectedArtifact.DataSource);
-                        var header = Items.First(i => i.Category == TreeViewVMItem.TreeViewItemCatorgies.IdPs);
-                        header.Items.Remove(SelectedArtifact);
-                        SelectedArtifact = Items[0];
+                        {
+                            App.PolicySet.RemoveIdP((XElement)SelectedArtifact.DataSource);
+                            var header = Items.First(i => i.Category == TreeViewVMItem.TreeViewItemCatorgies.IdPs);
+                            header.Items.Remove(SelectedArtifact);
+                            SelectedArtifact = Items[0];
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            });
+            CopyItem = new DelegateCommand(() =>
+            {
+                if ((SelectedArtifact == null) || (SelectedArtifact.Category != TreeViewVMItem.TreeViewItemCatorgies.Detail))
+                    return;
+                switch (SelectedArtifact.DetailType)
+                {
+                    case TreeViewVMItem.TreeViewItemDetails.TechnicalProfile:
+                        {
+                            var tp = (XElement)SelectedArtifact.DataSource;
+                            var copy = new XElement(tp);
+                            var cp = tp.Parent.Parent;
+                            string newName = String.Empty;
+                            for (int i = 1; i < 100; i++)
+                            {
+                                newName = $"{tp.Attribute("Id").Value}({i})";
+                                if (cp.Element(Constants.dflt + "TechnicalProfiles").
+                                        Elements(Constants.dflt + "TechnicalProfile").
+                                            FirstOrDefault(t => t.Attribute("Id").Value == newName) == null)
+                                    break;
+                            }
+                            copy.SetAttributeValue("Id", newName);
+                            tp.AddAfterSelf(copy);
+                            var header = Items.First(i => i.Category == TreeViewVMItem.TreeViewItemCatorgies.ClaimProviders);
+                            header = header.Items.First(h => h.DataSource == cp);
+                            var tvi = new TreeViewVMItem()
+                            {
+                                Name = newName,
+                                DataSource = copy,
+                                Category = TreeViewVMItem.TreeViewItemCatorgies.Detail,
+                                DetailType = TreeViewVMItem.TreeViewItemDetails.TechnicalProfile,
+                                OnSelect = new DelegateCommand((obj) => DetailView = new Page() { Content = new Views.TechnicalProfileClaims() { DataContext = new TechnicalProfileClaims((XElement)obj) } })
+                            };
+                            var currIx = header.Items.IndexOf(_selectedArtifact);
+                            if (currIx == header.Items.Count - 1)
+                                header.Items.Add(tvi);
+                            else
+                                header.Items.Insert(currIx + 1, tvi);
+                            SelectedArtifact = tvi;
+                        }
                         break;
                     default:
                         break;
@@ -163,10 +179,15 @@ namespace B2CPolicyEditor.ViewModels
                     App.PolicySet.Base.Root.Add(new XElement(Constants.dflt + "UserJourneys"));
                     journeys = App.PolicySet.Base.Root.Element(Constants.dflt + "UserJourneys");
                 }
-                var name = "Journey1";
+                var name = "NewJourney";
                 var journey = new XElement(Constants.dflt + "UserJourney", 
                     new XAttribute("Id", name),
-                    new XElement(Constants.dflt + "OrchestrationSteps"));
+                    new XElement(Constants.dflt + "OrchestrationSteps",
+                        new XElement(Constants.dflt + "OrchestrationStep", 
+                            new XAttribute("Order", 1),
+                            new XAttribute("Type", "SendClaims"),
+                            new XAttribute("CpimIssuerTechnicalProfileReferenceId", "JwtIssuer"))),
+                    new XElement(Constants.dflt + "ClientDefinition", new XAttribute("ReferenceId", "DefaultWeb")));
                 journeys.Add(journey);
                 var header = Items.FirstOrDefault(i => i.Category == TreeViewVMItem.TreeViewItemCatorgies.Journeys);
                 header.Items.Add(new JourneyTypeItem()
@@ -214,8 +235,14 @@ namespace B2CPolicyEditor.ViewModels
                 new TreeViewVMItem()
                 {
                     Category = TreeViewVMItem.TreeViewItemCatorgies.IdPs,
-                    Name = "Claims providers",
+                    Name = "IdPs",
                     Items = GetExternalClaimProviders(),
+                },
+                new TreeViewVMItem()
+                {
+                    Category = TreeViewVMItem.TreeViewItemCatorgies.ClaimProviders,
+                    Name = "Other claims providers",
+                    Items = GetInternalClaimProviders(),
                 },
                 //new TreeViewVMItem()
                 //{
@@ -271,6 +298,39 @@ namespace B2CPolicyEditor.ViewModels
                         if ((sts != null) && (sts.Value.StartsWith("https://login.microsoftonline.com/")))
                             cp.OnSelect = new DelegateCommand((obj) => DetailView = new Views.AADIdP() { DataContext = new ViewModels.AADIdP((XElement)obj) });
                     }
+                }
+                cps.Add(cp);
+            }
+
+            return cps;
+        }
+
+        private ObservableCollection<TreeViewVMItem> GetInternalClaimProviders()
+        {
+            var cps = new ObservableCollection<TreeViewVMItem>();
+            // Find all CPs using the 'proprietary' protocol or no protocol (because they use an include)
+            foreach (var el in App.PolicySet.Base.Root
+                .Element(Constants.dflt + "ClaimsProviders")
+                    .Elements() // ClaimsProvider
+                        .Where(cp => cp.Element(Constants.dflt + "TechnicalProfiles").Elements(Constants.dflt + "TechnicalProfile").First().Element(Constants.dflt + "Protocol").Attribute("Name").Value == "Proprietary"))
+            {
+                var cp = new TreeViewVMItem()
+                {
+                    Name = el.Element(Constants.dflt + "DisplayName").Value,
+                    DataSource = el,
+                    Category = TreeViewVMItem.TreeViewItemCatorgies.Detail,
+                    DetailType = TreeViewVMItem.TreeViewItemDetails.ClaimsProvider,
+                };
+                foreach(var tp in el.Element(Constants.dflt + "TechnicalProfiles").Elements(Constants.dflt + "TechnicalProfile"))
+                {
+                    cp.Items.Add(new TreeViewVMItem()
+                    {
+                        Name = tp.Attribute("Id").Value,
+                        DataSource = tp,
+                        Category = TreeViewVMItem.TreeViewItemCatorgies.Detail,
+                        DetailType = TreeViewVMItem.TreeViewItemDetails.TechnicalProfile,
+                        OnSelect = new DelegateCommand((obj) => DetailView = new Page() { Content = new Views.TechnicalProfileClaims() { DataContext = new TechnicalProfileClaims((XElement) obj) } } )
+                    });
                 }
                 cps.Add(cp);
             }
@@ -396,6 +456,7 @@ namespace B2CPolicyEditor.ViewModels
         }
         public ICommand PolicySetup { get; private set; }
         public ICommand DeleteItem { get; private set; }
+        public ICommand CopyItem { get; private set; }
         public ICommand ShowClaims { get; private set; }
         private bool SaveCurrent(bool allowCancel)
         {
@@ -425,9 +486,10 @@ namespace B2CPolicyEditor.ViewModels
         public TreeViewVMItem()
         {
             IsNameFixed = true;
+            Items = new ObservableCollection<TreeViewVMItem>();
         }
-        internal enum TreeViewItemCatorgies { Other, IdPs, Claims, Journeys, Detail };
-        internal enum TreeViewItemDetails {  Other, IdP, Claim, Journey, Token }
+        internal enum TreeViewItemCatorgies { Other, IdPs, Claims, Journeys, Detail, ClaimProviders };
+        internal enum TreeViewItemDetails {  Other, IdP, Claim, Journey, Token, ClaimsProvider, TechnicalProfile }
         internal TreeViewItemCatorgies Category { get; set; }
         internal TreeViewItemDetails DetailType { get; set; }
         public virtual string Name

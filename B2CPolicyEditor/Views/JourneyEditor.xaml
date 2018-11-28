@@ -62,7 +62,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
             </Grid.RowDefinitions>
-            <TextBox Text="{Binding Id}" Margin="8" HorizontalAlignment="Center" MinWidth="300"/>
+            <TextBox Text="{Binding Id}" Margin="8" HorizontalAlignment="Center" MinWidth="200"/>
             <TreeView Grid.Row="1" ItemsSource="{Binding Steps}" ItemTemplate="{StaticResource StepTemplate}" 
                   ext:TreeViewHelper.TreeViewSelectedItem="{Binding SelectedArtifact, Mode=TwoWay}"/>
         </Grid>
