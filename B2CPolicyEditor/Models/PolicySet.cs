@@ -73,6 +73,9 @@ namespace B2CPolicyEditor.Models
         private XDocument _base;
         [JsonIgnore]
         public XDocument Base { get { return _base; } }
+        //private XDocument _extensions;
+        //[JsonIgnore]
+        //public XDocument Extensions { get { return _extensions; } }
 
         private List<XDocument> _journeys;
         public void Load(string baseDir)
@@ -87,7 +90,7 @@ namespace B2CPolicyEditor.Models
                 {
                     _base = LoadFromStarterPack(baseDir, "TrustFrameworkBase");
                     //_base.Root.Element(Constants.dflt + "ClaimsProviders").Elements().First().Remove(); // remove FB
-                    //_extension = XDocument.Load($"{baseDir}TrustFrameworkExtensions.xml");
+                    //_extensions = LoadFromStarterPack(baseDir, "TrustFrameworkExtensions");
                     //_extension.Root.Element(Constants.dflt + "ClaimsProviders").Elements().First().Remove(); // remove FB
                     var j = LoadFromStarterPack(baseDir, "SignUpOrSignin");
                     _journeys.Add(j);

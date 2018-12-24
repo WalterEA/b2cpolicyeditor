@@ -259,3 +259,6 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/B2CPolicyEditor/B2CPolicyEditor-mariusrbook.csproj
+/IEF.json
+/Proxy.json
