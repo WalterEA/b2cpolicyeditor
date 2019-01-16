@@ -141,5 +141,54 @@ namespace B2CPolicyEditor.Extensions
         {
             return parent.Elements(Constants.dflt + name);
         }
+        public static XDocument Merge(this XDocument target, XDocument source)
+        {
+            foreach(var claimType in source.Root.Element(Constants.dflt + "BuildingBlocks")
+                                .Element(Constants.dflt + "ClaimsSchema")
+                                    .Elements(Constants.dflt + "ClaimType"))
+            {
+                target.Root.Element(Constants.dflt + "BuildingBlocks")
+                                .Element(Constants.dflt + "ClaimsSchema").Add(claimType);
+            }
+            foreach (var transform in source.Root.Element(Constants.dflt + "BuildingBlocks")
+                                .Element(Constants.dflt + "ClaimsTransformations")
+                                    .Elements(Constants.dflt + "ClaimsTransformation"))
+            {
+                target.Root.Element(Constants.dflt + "BuildingBlocks")
+                                .Element(Constants.dflt + "ClaimsTransformations").Add(transform);
+            }
+            foreach (var provider in source.Root.Element(Constants.dflt + "ClaimsProviders")
+                                .Elements(Constants.dflt + "ClaimsProvider"))
+            {
+                var targetProvider = target.Root.Element(Constants.dflt + "ClaimsProviders")
+                                        .Elements(Constants.dflt + "ClaimsProvider")
+                                            .FirstOrDefault(c => c.Element(Constants.dflt + "DisplayName").Value == provider.Element(Constants.dflt + "DisplayName").Value);
+                if (targetProvider == null)
+                    target.Root.Element(Constants.dflt + "ClaimsProviders").Add(provider);
+                else
+                    foreach (var tp in provider.Element(Constants.dflt + "TechnicalProfiles").Elements(Constants.dflt + "TechnicalProfile"))
+                            targetProvider.Element(Constants.dflt + "TechnicalProfiles").Add(tp);
+            }
+            foreach (var journey in source.Root.Element(Constants.dflt + "UserJourneys")
+                                    .Elements(Constants.dflt + "UserJourney"))
+            {
+                target.Root.Element(Constants.dflt + "UserJourneys").Add(journey);
+                var policyName = journey.Attribute("Id").Value;
+                var journeyRP = XDocument.Load(System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceStream("B2CPolicyEditor.IdPPolicies.UserJourney.xml"));
+                // All following will be done at save time (SetPolicyHeader)
+                //journeyRP.Root.Attribute("TenantId").Value = App.PolicySet.Domain;
+                //journeyRP.Root.Attribute("PolicyId").Value = $"B2C_1A_{App.PolicySet.NamePrefix}{policyName}";
+                //journeyRP.Root.Attribute("PublicPolicyUri").Value = $"http://{App.PolicySet.Domain}/B2C_1A_{App.PolicySet.NamePrefix}{policyName}";
+                //var basePolicy = journeyRP.Root.Element(Constants.dflt + "BasePolicy");
+                //basePolicy.Element(Constants.dflt + "TenantId").Value = App.PolicySet.Domain;
+                //basePolicy.Element(Constants.dflt + "PolicyId").Value = journeyRP.Root.Attribute("PolicyId").Value;
+                journeyRP.Root.Element(Constants.dflt + "RelyingParty")
+                    .Element(Constants.dflt + "DefaultUserJourney").SetAttributeValue("ReferenceId", policyName);
+                App.PolicySet.Journeys.Add(journeyRP);
+                App.PolicySet.FileNames.Add(policyName);
+            }
+
+            return target;
+        }
     }
 }

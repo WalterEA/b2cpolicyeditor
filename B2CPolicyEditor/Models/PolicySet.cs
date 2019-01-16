@@ -364,6 +364,7 @@ namespace B2CPolicyEditor.Models
                 doc.Root.Element(Constants.dflt + "BasePolicy").Element(Constants.dflt + "TenantId").Value = App.PolicySet.Domain;
                 doc.Root.Element(Constants.dflt + "BasePolicy").Element(Constants.dflt + "PolicyId").Value = $"B2C_1A_{App.PolicySet.NamePrefix}{baseName}";
             }
+            //TODO: also journeys!
         }
         public void Save()
         {

@@ -37,33 +37,19 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
             </Grid.RowDefinitions>
-            <ToolBarTray>
-                <ToolBar>
-                    <Button Content="New..." Command="{Binding NewPolicy}" Margin="10" ToolTip="Download one of the Starter Pack policy sets" />                
-                    <Button Content="Load..." Command="{Binding Open}" Margin="10" ToolTip="Read existing policy set (base and journeys) from a folder" />
-                    <Button Content="Save..." Command="{Binding Save}" Margin="10" ToolTip="Save current policy set to a folder" />
-                    <Button Content="Add IdP..." Command="{Binding AddIdP}" Margin="10" ToolTip="Add a new Identity Provider (social or custom)" />
-                    <Button Content="Add REST API" Command="{Binding AddRESTApi}" Margin="10" ToolTip="Add a new REST API definition" />
-                    <Button Content="Add journey type..." Command="{Binding AddJourneyType}" Margin="10" ToolTip="Create a new journey" />
-                    <Button Content="Add journey step..." Command="{Binding AddJourneyStep}" Margin="10" ToolTip="Add new journey step to journey" />
-                    <!--<StackPanel Orientation="Horizontal" Margin="10">
-                        <TextBlock Text="Add social IdP:" Margin="0,2,4,0"/>
-                        <ComboBox>
-                            <Button Content="Facebook" Command="{Binding AddIdP}" CommandParameter="Facebook" />
-                            <Button Content="Google" Command="{Binding AddIdP}" CommandParameter="Google" />
-                            <Button Content="MSA" Command="{Binding AddIdP}" CommandParameter="MSA" />
-                        </ComboBox>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="10">
-                        <TextBlock Text="Add custom IdP:" Margin="0,2,4,0"/>
-                        <ComboBox>
-                            <Button Content="SAML2" Command="{Binding AddIdP}" CommandParameter="SAML" />
-                        </ComboBox>
-                    </StackPanel>                
-                    <Button Content="Delete" Command="{Binding DeleteItem}" Margin="10" />
-                    <Button Content="New journey" Command="{Binding NewJourney}" Margin="10" />-->
-                </ToolBar>
-            </ToolBarTray>
+            <Menu>
+                    <MenuItem Header="New..." Command="{Binding NewPolicy}" Margin="10" ToolTip="Download one of the Starter Pack policy sets" />                
+                    <MenuItem Header="Load..." Command="{Binding Open}" Margin="10" ToolTip="Read existing policy set (base and journeys) from a folder" />
+                    <MenuItem Header="Save..." Command="{Binding Save}" Margin="10" ToolTip="Save current policy set to a folder" />
+                    <MenuItem Header="Add IdP..." Command="{Binding AddIdP}" Margin="10" ToolTip="Add a new Identity Provider (social or custom)" />
+                    <MenuItem Header="Add REST API" Command="{Binding AddRESTApi}" Margin="10" ToolTip="Add a new REST API definition" />
+                    <MenuItem Header="Add journey type..." Command="{Binding AddJourneyType}" Margin="10" ToolTip="Create a new journey" />
+                    <MenuItem Header="Add journey step..." Command="{Binding AddJourneyStep}" Margin="10" ToolTip="Add new journey step to journey" />
+                    <MenuItem Header="Recipies">
+                        <MenuItem Header="Local users use ids" Command="{Binding RecUserId}" />
+                        <MenuItem Header="Add SAML RP" />
+                    </MenuItem>
+            </Menu>
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />

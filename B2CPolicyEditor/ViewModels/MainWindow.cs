@@ -222,6 +222,21 @@ namespace B2CPolicyEditor.ViewModels
                 var wiz = new Views.AddJourneyStepWizard() { DataContext = new JourneyEditor(_selectedArtifact.DataSource) };
                 wiz.ShowDialog();
             });
+            RecUserId = new DelegateCommand(() =>
+            {
+                if (App.PolicySet.Base == null) return;
+                var xml = XDocument.Load(System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceStream("B2CPolicyEditor.IdPPolicies.UsingUserId.xml"));
+                App.PolicySet.Base.Merge(xml);
+                UpdateTree();
+
+                //App.PolicySet.Base.Root.Element(Constants.dflt + "ClaimTypes").Add(
+                //    new XElement(Constants.dflt + "ClaimType", new XAttribute("Id", "strongAuthenticationEmailAddress"),
+                //        new XElement(Constants.dflt + "DisplayName", "Authentication email"),
+                //        new XElement(Constants.dflt + "DataType", "string"),
+                //        new XElement(Constants.dflt + "UserHelpText", "Email used for authentication confirmation (pwd reset)"),
+                //        new XElement(Constants.dflt + "UserInputType", "TextBox")));
+                // 
+            });
 
             PolicySetup = new DelegateCommand(() => DetailView = new Views.PolicySetup());
             ShowClaims = new DelegateCommand(() => DetailView = new Views.Claims() { DataContext = new ViewModels.Claims() } );
@@ -289,7 +304,8 @@ namespace B2CPolicyEditor.ViewModels
                                 .Where(tp => (tp.Element(Constants.dflt + "Protocol") != null)))
             {
                 var protocolName = el.Element(Constants.dflt + "Protocol").Attribute("Name").Value;
-                if ((String.Compare(protocolName, "Proprietary", true) == 0) || (String.Compare(protocolName, "None", true) == 0))
+                if ((String.Compare(protocolName, "Proprietary", true) == 0) || 
+                    (String.Compare(protocolName, "None", true) == 0))
                     continue;
                 var cp = new TreeViewVMItem()
                 {
@@ -307,7 +323,7 @@ namespace B2CPolicyEditor.ViewModels
                     cp.OnSelect = new DelegateCommand((obj) => DetailView = new Views.OAuthConfiguration(obj));
                 else if (protocolName == "SAML2")
                     cp.OnSelect = new DelegateCommand((obj) => DetailView = new Views.SAMLIdP() { DataContext = new ViewModels.SAMLIdP((XElement)obj) });
-                else // AAD? or local account!
+                else if (String.Compare(el.Attribute("Id").Value, "login-NonInteractive") != 0) // AAD?
                 {
                     var meta = el.Element(Constants.dflt + "Metadata");
                     if (meta != null)
@@ -497,6 +513,7 @@ namespace B2CPolicyEditor.ViewModels
         public ICommand AddJourneyStep { get; private set; }
         //public ICommand AddCustomIdP { get; private set; }
         public ICommand Generate { get; private set; }
+        public ICommand RecUserId { get; private set; }
 
         static ObservableCollection<TraceItem> _trace;
         public static ObservableCollection<TraceItem> Trace
