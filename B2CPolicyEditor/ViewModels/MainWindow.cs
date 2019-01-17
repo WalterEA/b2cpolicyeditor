@@ -238,6 +238,14 @@ namespace B2CPolicyEditor.ViewModels
                 //App.PolicySet.Base.Merge(xml);
                 //UpdateTree();
             });
+            AddTOU = new DelegateCommand(() =>
+            {
+                if (App.PolicySet.Base == null) return;
+                var xml = XDocument.Load(System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceStream("B2CPolicyEditor.IdPPolicies.AddTermsOfUse.xml"));
+                App.PolicySet.Base.Merge(xml);
+                UpdateTree();
+                MessageBox.Show("Done");
+            });
 
             PolicySetup = new DelegateCommand(() => DetailView = new Views.PolicySetup());
             ShowClaims = new DelegateCommand(() => DetailView = new Views.Claims() { DataContext = new ViewModels.Claims() } );
@@ -547,6 +555,7 @@ namespace B2CPolicyEditor.ViewModels
         public ICommand Generate { get; private set; }
         public ICommand RecUserId { get; private set; }
         public ICommand AddSAMLAsIdP { get; private set; }
+        public ICommand AddTOU { get; private set; }
 
         static ObservableCollection<TraceItem> _trace;
         public static ObservableCollection<TraceItem> Trace

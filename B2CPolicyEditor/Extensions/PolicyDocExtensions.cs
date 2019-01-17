@@ -157,17 +157,30 @@ namespace B2CPolicyEditor.Extensions
                 target.Root.Element(Constants.dflt + "BuildingBlocks")
                                 .Element(Constants.dflt + "ClaimsTransformations").Add(transform);
             }
-            foreach (var provider in source.Root.Element(Constants.dflt + "ClaimsProviders")
+            foreach (var sourceCP in source.Root.Element(Constants.dflt + "ClaimsProviders")
                                 .Elements(Constants.dflt + "ClaimsProvider"))
             {
-                var targetProvider = target.Root.Element(Constants.dflt + "ClaimsProviders")
+                var targetCP = target.Root.Element(Constants.dflt + "ClaimsProviders")
                                         .Elements(Constants.dflt + "ClaimsProvider")
-                                            .FirstOrDefault(c => c.Element(Constants.dflt + "DisplayName").Value == provider.Element(Constants.dflt + "DisplayName").Value);
-                if (targetProvider == null)
-                    target.Root.Element(Constants.dflt + "ClaimsProviders").Add(provider);
+                                            .FirstOrDefault(c => c.Element(Constants.dflt + "DisplayName").Value == sourceCP.Element(Constants.dflt + "DisplayName").Value);
+                if (targetCP == null)
+                    target.Root.Element(Constants.dflt + "ClaimsProviders").Add(sourceCP);
                 else
-                    foreach (var tp in provider.Element(Constants.dflt + "TechnicalProfiles").Elements(Constants.dflt + "TechnicalProfile"))
-                            targetProvider.Element(Constants.dflt + "TechnicalProfiles").Add(tp);
+                {
+                    foreach (var sourceTP in sourceCP.Element(Constants.dflt + "TechnicalProfiles").Elements(Constants.dflt + "TechnicalProfile"))
+                    {
+                        var targetTP = targetCP.Element(Constants.dflt + "TechnicalProfiles").Elements(Constants.dflt + "TechnicalProfile").FirstOrDefault(p => p.Attribute("Id").Value == sourceTP.Attribute("Id").Value);
+                        if (targetTP == null)
+                            targetCP.Element(Constants.dflt + "TechnicalProfiles").Add(sourceTP);
+                        else
+                            targetTP
+                                .MergeCollections(sourceTP, "Metadata", "Item", "Key")
+                                .MergeCollections(sourceTP, "InputClaims", "InputClaim", "ClaimTypeReferenceId")
+                                .MergeCollections(sourceTP, "PersistedClaims", "PersistedClaim", "ClaimTypeReferenceId")
+                                .MergeCollections(sourceTP, "OutputClaims", "OutputClaim", "ClaimTypeReferenceId")
+                                .MergeCollections(sourceTP, "OutputClaimsTransformations", "OutputClaimsTransformation", "ReferenceId");
+                    }
+                }
             }
             foreach (var journey in source.Root.Element(Constants.dflt + "UserJourneys")
                                     .Elements(Constants.dflt + "UserJourney"))
@@ -188,6 +201,55 @@ namespace B2CPolicyEditor.Extensions
                 App.PolicySet.FileNames.Add(policyName);
             }
 
+            return target;
+        }
+        public static XElement XPath(this XElement doc, string path)
+        {
+            var source = doc;
+            try
+            {
+                var elNames = path.Split('/');
+                foreach (var elName in elNames)
+                {
+                    source = source.Element(Constants.dflt + elName);
+                }
+            }
+            catch
+            {
+                return null;
+            }
+            return source;
+        }
+        public static XElement MergeCollections(this XElement target, XElement source, string collectionName, string itemName, string keyAttr)
+        {
+            if (source.Element(Constants.dflt + collectionName) == null)
+                return target;
+            if (target.Element(Constants.dflt + collectionName) == null)
+            {
+                // Add new element in same relative position as it is in Source
+                var sibling = source.Element(Constants.dflt + collectionName).ElementsBeforeSelf().Last();
+                if (sibling == null)
+                    target.AddFirst(new XElement(Constants.dflt + collectionName));
+                else
+                    target.Element(sibling.Name).AddAfterSelf(new XElement(Constants.dflt + collectionName));
+            }
+            foreach (var c in source.Element(Constants.dflt + collectionName).Elements(Constants.dflt + itemName))
+            {
+                // Try to replace any existing items with same attr values
+                var targetItems = target.Element(Constants.dflt + collectionName).Elements(Constants.dflt + itemName);
+                if (targetItems != null)
+                {
+                    var targetItem = targetItems.FirstOrDefault(t => t.Attribute(keyAttr).Value == c.Attribute(keyAttr).Value);
+                    if (targetItem != null)
+                    {
+                        foreach (var attr in c.Attributes())
+                            targetItem.SetAttributeValue(attr.Name, attr.Value);
+                        continue;
+                    }
+                }
+                // Otherwise just add the item
+                target.Element(Constants.dflt + collectionName).Add(c);
+            }
             return target;
         }
     }

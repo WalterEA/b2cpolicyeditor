@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<TrustFrameworkPolicy xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://schemas.microsoft.com/online/cpim/schemas/2013/06" PolicySchemaVersion="0.3.0.0" TenantId="mrochonb2cprod.onmicrosoft.com" PolicyId="B2C_1A_UIDTrustFrameworkBase" PublicPolicyUri="http://mrochonb2cprod.onmicrosoft.com/B2C_1A_UIDTrustFrameworkBase">
+  <BuildingBlocks>
+    <ClaimsSchema>
+      <ClaimType Id="extension_TOUAcceptedDateTime">
+        <DisplayName>Terms of Use consent date/time</DisplayName>
+        <DataType>dateTime</DataType>
+        <UserHelpText>Terms of use consent time</UserHelpText>
+        <UserInputType>TextBox</UserInputType>
+      </ClaimType>
+      <ClaimType Id="extension_TOUAccepted">
+        <DisplayName>Do you accept terms and conditions?</DisplayName>
+        <DataType>boolean</DataType>
+        <UserHelpText>Terms of use acceptance</UserHelpText>
+        <UserInputType>CheckboxMultiSelect</UserInputType>
+        <Restriction>
+          <Enumeration Text="" Value="true" SelectByDefault="false" />
+        </Restriction>
+      </ClaimType>
+      <ClaimType Id="extension_TOUConsentRequired">
+        <DisplayName>Is ToU consent required?</DisplayName>
+        <DataType>boolean</DataType>
+        <UserHelpText>Terms of use required</UserHelpText>
+      </ClaimType>
+      <ClaimType Id="extension_TOUVersion">
+        <DisplayName>Version user consented to</DisplayName>
+        <DataType>int</DataType>
+        <UserHelpText>Version user consented to</UserHelpText>
+      </ClaimType>
+    </ClaimsSchema>
+    <ClaimsTransformations>
+      <ClaimsTransformation Id="GetNewUserAgreeToTermsOfUseConsentDateTime" TransformationMethod="GetCurrentDateTime">
+        <OutputClaims>
+          <OutputClaim ClaimTypeReferenceId="extension_TOUAcceptedDateTime" TransformationClaimType="currentDateTime" />
+        </OutputClaims>
+      </ClaimsTransformation>
+      <ClaimsTransformation Id="IsTermsOfUseConsentRequired" TransformationMethod="IsTermsOfUseConsentRequired">
+        <InputClaims>
+          <InputClaim ClaimTypeReferenceId="extension_TOUAcceptedDateTime" TransformationClaimType="termsOfUseConsentDateTime" />
+        </InputClaims>
+        <InputParameters>
+          <InputParameter Id="termsOfUseTextUpdateDateTime" DataType="dateTime" Value="2098-01-30T23:03:45" />
+        </InputParameters>
+        <OutputClaims>
+          <OutputClaim ClaimTypeReferenceId="extension_TOUConsentRequired" TransformationClaimType="result" />
+        </OutputClaims>
+      </ClaimsTransformation>
+      <ClaimsTransformation Id="AssertTermsOfUseAcceptedIsTrue" TransformationMethod="AssertBooleanClaimIsEqualToValue">
+        <InputClaims>
+          <InputClaim ClaimTypeReferenceId="extension_TOUAccepted" TransformationClaimType="inputClaim" />
+        </InputClaims>
+        <InputParameters>
+          <InputParameter Id="valueToCompareTo" DataType="boolean" Value="true" />
+        </InputParameters>
+      </ClaimsTransformation>
+    </ClaimsTransformations>
+  </BuildingBlocks>
+  <ClaimsProviders>
+    <ClaimsProvider>
+      <DisplayName>Azure Active Directory</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="AAD-UserWriteUsingLogonEmail">
+          <Metadata />
+          <InputClaims></InputClaims>
+          <PersistedClaims>
+            <PersistedClaim ClaimTypeReferenceId="extension_TOUVersion" />
+          </PersistedClaims>
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+    <ClaimsProvider>
+      <DisplayName>Local Account</DisplayName>
+      <TechnicalProfiles>
+        <TechnicalProfile Id="LocalAccountSignUpWithLogonEmail">
+          <!-- Use the following after adding date based TOU-->
+          <!--<Metadata>
+            <Item Key="UserMessageIfClaimsTransformationBooleanValueIsNotEqual">Cannot procede without consent.</Item>
+          </Metadata>-->
+          <InputClaims />
+          <OutputClaims>
+            <OutputClaim ClaimTypeReferenceId="extension_TOUAccepted" Required="true"/>
+            <OutputClaim ClaimTypeReferenceId="extension_TOUVersion" DefaultValue="1" />
+          </OutputClaims> 
+          <OutputClaimsTransformations>
+            <OutputClaimsTransformation ReferenceId="GetNewUserAgreeToTermsOfUseConsentDateTime" />
+          </OutputClaimsTransformations>          
+        </TechnicalProfile>
+      </TechnicalProfiles>
+    </ClaimsProvider>
+  </ClaimsProviders>
+  <UserJourneys />
+  <RelyingParty>
+    <DefaultUserJourney ReferenceId="SignUpOrSignIn" />
+    <TechnicalProfile Id="PolicyProfile">
+      <OutputClaims>
+        <OutputClaim ClaimTypeReferenceId="extension_TOUAccepted"  />
+        <OutputClaim ClaimTypeReferenceId="extension_TOUAcceptedDateTime" />
+        <OutputClaim ClaimTypeReferenceId="extension_TOUVersion" />
+      </OutputClaims>
+    </TechnicalProfile>
+  </RelyingParty>
+</TrustFrameworkPolicy>

@@ -354,6 +354,9 @@
   <ItemGroup>
     <EmbeddedResource Include="IdPPolicies\AsSAMLIdP-Endpoint.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="IdPPolicies\AddTermsOfUse.xml" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

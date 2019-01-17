@@ -48,7 +48,8 @@
                     <MenuItem Header="Recipies">
                         <MenuItem Header="Local users use ids" Command="{Binding RecUserId}" />
                         <MenuItem Header="Add SAML RP" />
-                    </MenuItem>
+                        <MenuItem Header="Add Terms of Use checkbox" Command="{Binding AddTOU}" />
+                </MenuItem>
             </Menu>
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
