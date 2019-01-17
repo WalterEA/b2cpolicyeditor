@@ -100,6 +100,7 @@
     <Compile Include="ViewModels\SocialIdP.cs" />
     <Compile Include="ViewModels\TechnicalProfileClaims.cs" />
     <Compile Include="ViewModels\TokenEditor.cs" />
+    <Compile Include="ViewModels\TokenIssuerDetails.cs" />
     <Compile Include="Views\AADIdP.xaml.cs">
       <DependentUpon>AADIdP.xaml</DependentUpon>
     </Compile>
@@ -153,6 +154,9 @@
     </Compile>
     <Compile Include="Views\TokenEditor.xaml.cs">
       <DependentUpon>TokenEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TokenIssuerDetails.xaml.cs">
+      <DependentUpon>TokenIssuerDetails.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\TokenIssuers.xaml.cs">
       <DependentUpon>TokenIssuers.xaml</DependentUpon>
@@ -238,6 +242,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\TokenEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\TokenIssuerDetails.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -339,6 +347,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="IdPPolicies\UserJourney.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="IdPPolicies\AsSAMLIdP.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="IdPPolicies\AsSAMLIdP-Endpoint.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

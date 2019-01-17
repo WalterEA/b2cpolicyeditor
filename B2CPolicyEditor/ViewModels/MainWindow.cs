@@ -228,14 +228,15 @@ namespace B2CPolicyEditor.ViewModels
                 var xml = XDocument.Load(System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceStream("B2CPolicyEditor.IdPPolicies.UsingUserId.xml"));
                 App.PolicySet.Base.Merge(xml);
                 UpdateTree();
-
-                //App.PolicySet.Base.Root.Element(Constants.dflt + "ClaimTypes").Add(
-                //    new XElement(Constants.dflt + "ClaimType", new XAttribute("Id", "strongAuthenticationEmailAddress"),
-                //        new XElement(Constants.dflt + "DisplayName", "Authentication email"),
-                //        new XElement(Constants.dflt + "DataType", "string"),
-                //        new XElement(Constants.dflt + "UserHelpText", "Email used for authentication confirmation (pwd reset)"),
-                //        new XElement(Constants.dflt + "UserInputType", "TextBox")));
-                // 
+            });
+            AddSAMLAsIdP = new DelegateCommand(() =>
+            {
+                throw new NotSupportedException();
+                //if (App.PolicySet.Base == null) return;
+                //DetailView = new Views.SAMLAsRPSetup();
+                //var xml = XDocument.Load(System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceStream("B2CPolicyEditor.IdPPolicies.AsSAMLIdP.xml"));
+                //App.PolicySet.Base.Merge(xml);
+                //UpdateTree();
             });
 
             PolicySetup = new DelegateCommand(() => DetailView = new Views.PolicySetup());
@@ -276,6 +277,12 @@ namespace B2CPolicyEditor.ViewModels
                     Category = TreeViewVMItem.TreeViewItemCatorgies.ClaimProviders,
                     Name = "Other claims providers",
                     Items = GetInternalClaimProviders(),
+                },
+                new TreeViewVMItem()
+                {
+                    Category = TreeViewVMItem.TreeViewItemCatorgies.TokenIssuers,
+                    Name = "Token issuers",
+                    Items = GetTokenIssuers(),
                 },
                 //new TreeViewVMItem()
                 //{
@@ -378,6 +385,31 @@ namespace B2CPolicyEditor.ViewModels
                         });
                 }
                 cps.Add(cp);
+            }
+
+            return cps;
+        }
+
+        private ObservableCollection<TreeViewVMItem> GetTokenIssuers()
+        {
+            var cps = new ObservableCollection<TreeViewVMItem>();
+            // Find the CP which contains TPs for token issuers
+            foreach (var tp in App.PolicySet.Base.Root
+                .Element(Constants.dflt + "ClaimsProviders")
+                    .Elements() // ClaimsProvider
+                        .First(cp => cp.Element(Constants.dflt + "DisplayName").Value == "Token Issuer")
+                            .Element(Constants.dflt + "TechnicalProfiles")
+                                .Elements(Constants.dflt + "TechnicalProfile"))
+            {
+                var ti = new TreeViewVMItem()
+                {
+                    Name = tp.Attribute("Id").Value,
+                    DataSource = tp,
+                    Category = TreeViewVMItem.TreeViewItemCatorgies.Detail,
+                    DetailType = TreeViewVMItem.TreeViewItemDetails.TokenIssuer,
+                    OnSelect = new DelegateCommand((obj) => DetailView = new Page() { Content = new Views.TokenIssuerDetails() { DataContext = new ViewModels.TokenIssuerDetails() { Source = tp } } })
+                };
+                cps.Add(ti);
             }
 
             return cps;
@@ -514,6 +546,7 @@ namespace B2CPolicyEditor.ViewModels
         //public ICommand AddCustomIdP { get; private set; }
         public ICommand Generate { get; private set; }
         public ICommand RecUserId { get; private set; }
+        public ICommand AddSAMLAsIdP { get; private set; }
 
         static ObservableCollection<TraceItem> _trace;
         public static ObservableCollection<TraceItem> Trace
@@ -555,8 +588,8 @@ namespace B2CPolicyEditor.ViewModels
             IsNameFixed = true;
             Items = new ObservableCollection<TreeViewVMItem>();
         }
-        internal enum TreeViewItemCatorgies { Other, IdPs, Claims, Journeys, Detail, ClaimProviders };
-        internal enum TreeViewItemDetails {  Other, IdP, Claim, Journey, Token, ClaimsProvider, TechnicalProfile }
+        internal enum TreeViewItemCatorgies { Other, IdPs, Claims, Journeys, Detail, ClaimProviders, TokenIssuers };
+        internal enum TreeViewItemDetails {  Other, IdP, Claim, Journey, Token, ClaimsProvider, TechnicalProfile, TokenIssuer }
         internal TreeViewItemCatorgies Category { get; set; }
         internal TreeViewItemDetails DetailType { get; set; }
         public virtual string Name
