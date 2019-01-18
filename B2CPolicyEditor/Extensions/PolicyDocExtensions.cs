@@ -175,6 +175,7 @@ namespace B2CPolicyEditor.Extensions
                         else
                             targetTP
                                 .MergeCollections(sourceTP, "Metadata", "Item", "Key")
+                                .MergeCollections(sourceTP, "InputClaimsTransformations", "InputClaimsTransformation", "ReferenceId")
                                 .MergeCollections(sourceTP, "InputClaims", "InputClaim", "ClaimTypeReferenceId")
                                 .MergeCollections(sourceTP, "PersistedClaims", "PersistedClaim", "ClaimTypeReferenceId")
                                 .MergeCollections(sourceTP, "OutputClaims", "OutputClaim", "ClaimTypeReferenceId")
@@ -185,40 +186,29 @@ namespace B2CPolicyEditor.Extensions
             foreach (var journey in source.Root.Element(Constants.dflt + "UserJourneys")
                                     .Elements(Constants.dflt + "UserJourney"))
             {
+                var currJourney = target.Root.Element(Constants.dflt + "UserJourneys").Elements(Constants.dflt + "UserJourney").FirstOrDefault(j => j.Attribute("Id").Value == journey.Attribute("Id").Value);
+                if (currJourney != null)
+                    currJourney.Remove();
                 target.Root.Element(Constants.dflt + "UserJourneys").Add(journey);
-                var policyName = journey.Attribute("Id").Value;
-                var journeyRP = XDocument.Load(System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceStream("B2CPolicyEditor.IdPPolicies.UserJourney.xml"));
-                // All following will be done at save time (SetPolicyHeader)
-                //journeyRP.Root.Attribute("TenantId").Value = App.PolicySet.Domain;
-                //journeyRP.Root.Attribute("PolicyId").Value = $"B2C_1A_{App.PolicySet.NamePrefix}{policyName}";
-                //journeyRP.Root.Attribute("PublicPolicyUri").Value = $"http://{App.PolicySet.Domain}/B2C_1A_{App.PolicySet.NamePrefix}{policyName}";
-                //var basePolicy = journeyRP.Root.Element(Constants.dflt + "BasePolicy");
-                //basePolicy.Element(Constants.dflt + "TenantId").Value = App.PolicySet.Domain;
-                //basePolicy.Element(Constants.dflt + "PolicyId").Value = journeyRP.Root.Attribute("PolicyId").Value;
-                journeyRP.Root.Element(Constants.dflt + "RelyingParty")
-                    .Element(Constants.dflt + "DefaultUserJourney").SetAttributeValue("ReferenceId", policyName);
-                App.PolicySet.Journeys.Add(journeyRP);
-                App.PolicySet.FileNames.Add(policyName);
+                if (currJourney == null)
+                {
+                    var policyName = journey.Attribute("Id").Value;
+                    var journeyRP = XDocument.Load(System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceStream("B2CPolicyEditor.IdPPolicies.UserJourney.xml"));
+                    // All following will be done at save time (SetPolicyHeader)
+                    //journeyRP.Root.Attribute("TenantId").Value = App.PolicySet.Domain;
+                    //journeyRP.Root.Attribute("PolicyId").Value = $"B2C_1A_{App.PolicySet.NamePrefix}{policyName}";
+                    //journeyRP.Root.Attribute("PublicPolicyUri").Value = $"http://{App.PolicySet.Domain}/B2C_1A_{App.PolicySet.NamePrefix}{policyName}";
+                    //var basePolicy = journeyRP.Root.Element(Constants.dflt + "BasePolicy");
+                    //basePolicy.Element(Constants.dflt + "TenantId").Value = App.PolicySet.Domain;
+                    //basePolicy.Element(Constants.dflt + "PolicyId").Value = journeyRP.Root.Attribute("PolicyId").Value;
+                    journeyRP.Root.Element(Constants.dflt + "RelyingParty")
+                        .Element(Constants.dflt + "DefaultUserJourney").SetAttributeValue("ReferenceId", policyName);
+                    App.PolicySet.Journeys.Add(journeyRP);
+                    App.PolicySet.FileNames.Add(policyName);
+                }
             }
 
             return target;
-        }
-        public static XElement XPath(this XElement doc, string path)
-        {
-            var source = doc;
-            try
-            {
-                var elNames = path.Split('/');
-                foreach (var elName in elNames)
-                {
-                    source = source.Element(Constants.dflt + elName);
-                }
-            }
-            catch
-            {
-                return null;
-            }
-            return source;
         }
         public static XElement MergeCollections(this XElement target, XElement source, string collectionName, string itemName, string keyAttr)
         {
