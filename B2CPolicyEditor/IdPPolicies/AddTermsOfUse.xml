@@ -17,37 +17,16 @@
           <Enumeration Text="" Value="true" SelectByDefault="false" />
         </Restriction>
       </ClaimType>
-      <ClaimType Id="extension_TOUConsentRequired">
-        <DisplayName>Is ToU consent required?</DisplayName>
-        <DataType>boolean</DataType>
-        <UserHelpText>Terms of use required</UserHelpText>
-      </ClaimType>
       <ClaimType Id="extension_TOUVersion">
         <DisplayName>Version user consented to</DisplayName>
-        <DataType>int</DataType>
+        <DataType>string</DataType>
         <UserHelpText>Version user consented to</UserHelpText>
       </ClaimType>
-      <ClaimType Id="extension_TOUNewVersion">
-        <DisplayName>Version user consented to</DisplayName>
-        <DataType>int</DataType>
-        <UserHelpText>Version user consented to</UserHelpText>
-      </ClaimType>      
     </ClaimsSchema>
     <ClaimsTransformations>
       <ClaimsTransformation Id="GetNewUserAgreeToTermsOfUseConsentDateTime" TransformationMethod="GetCurrentDateTime">
         <OutputClaims>
           <OutputClaim ClaimTypeReferenceId="extension_TOUAcceptedDateTime" TransformationClaimType="currentDateTime" />
-        </OutputClaims>
-      </ClaimsTransformation>
-      <ClaimsTransformation Id="IsTermsOfUseConsentRequired" TransformationMethod="IsTermsOfUseConsentRequired">
-        <InputClaims>
-          <InputClaim ClaimTypeReferenceId="extension_TOUAcceptedDateTime" TransformationClaimType="termsOfUseConsentDateTime" />
-        </InputClaims>
-        <InputParameters>
-          <InputParameter Id="termsOfUseTextUpdateDateTime" DataType="dateTime" Value="2098-01-30T23:03:45" />
-        </InputParameters>
-        <OutputClaims>
-          <OutputClaim ClaimTypeReferenceId="extension_TOUConsentRequired" TransformationClaimType="result" />
         </OutputClaims>
       </ClaimsTransformation>
       <ClaimsTransformation Id="AssertTermsOfUseAcceptedIsTrue" TransformationMethod="AssertBooleanClaimIsEqualToValue">
@@ -58,6 +37,15 @@
           <InputParameter Id="valueToCompareTo" DataType="boolean" Value="true" />
         </InputParameters>
       </ClaimsTransformation>
+      <!-- Update with new current version of TOU. Will only be invoked if user does acceptance -->
+		<ClaimsTransformation Id="UpdateTOUVersion" TransformationMethod="CreateStringClaim">
+		  <InputParameters>
+			<InputParameter Id="value" DataType="string" Value="1" />
+		  </InputParameters>
+		  <OutputClaims>
+			<OutputClaim ClaimTypeReferenceId="extension_TOUVersion" TransformationClaimType="createdClaim" />
+		  </OutputClaims>
+		</ClaimsTransformation>	     
     </ClaimsTransformations>
   </BuildingBlocks>
   <ClaimsProviders>
@@ -80,11 +68,12 @@
           <IncludeInSso />
           <InputClaimsTransformations>
             <InputClaimsTransformation ReferenceId="GetNewUserAgreeToTermsOfUseConsentDateTime" />
+			      <InputClaimsTransformation ReferenceId="UpdateTOUVersion" />
           </InputClaimsTransformations>
           <InputClaims></InputClaims>
           <PersistedClaims>
             <PersistedClaim ClaimTypeReferenceId="extension_TOUAcceptedDateTime" />
-            <PersistedClaim ClaimTypeReferenceId="extension_TOUVersion" DefaultValue="1" />
+            <PersistedClaim ClaimTypeReferenceId="extension_TOUVersion" />
           </PersistedClaims>
         </TechnicalProfile>
         <TechnicalProfile Id="AAD-UserReadUsingEmailAddress">
@@ -95,13 +84,13 @@
         <TechnicalProfile Id="AAD-UserWriteProfileUsingObjectId">
           <PersistedClaims>
             <PersistedClaim ClaimTypeReferenceId="extension_TOUAcceptedDateTime" />
-            <PersistedClaim ClaimTypeReferenceId="extension_TOUVersion" DefaultValue="1" />
+            <PersistedClaim ClaimTypeReferenceId="extension_TOUVersion" />
           </PersistedClaims>
           <IncludeTechnicalProfile ReferenceId="AAD-Common" />
         </TechnicalProfile>
         <TechnicalProfile Id="AAD-UserReadUsingObjectId">
           <OutputClaims>
-            <OutputClaim ClaimTypeReferenceId="extension_TOUVersion" DefaultValue="0" />
+            <OutputClaim ClaimTypeReferenceId="extension_TOUVersion" />
           </OutputClaims>
         </TechnicalProfile>        
       </TechnicalProfiles>
@@ -128,8 +117,10 @@
             <!-- Optional claims. These claims are collected from the user and can be modified. Any claim added here should be updated in the
                  ValidationTechnicalProfile referenced below so it can be written to directory after being updateed by the user, i.e. AAD-UserWriteProfileUsingObjectId. -->
             <OutputClaim ClaimTypeReferenceId="extension_TOUAccepted" Required="true" />
-            <OutputClaim ClaimTypeReferenceId="extension_TOUNewVersion" DefaultValue="2" PartnerClaimType="extension_TOUVersion" />            
           </OutputClaims>
+          <OutputClaimsTransformations>
+            <OutputClaimsTransformation ReferenceId="UpdateTOUVersion" />
+          </OutputClaimsTransformations>
           <ValidationTechnicalProfiles>
             <ValidationTechnicalProfile ReferenceId="AAD-UserWriteProfileUsingObjectId" />
           </ValidationTechnicalProfiles>
@@ -147,11 +138,8 @@
           <InputClaims />
           <OutputClaims>
             <OutputClaim ClaimTypeReferenceId="extension_TOUAccepted" Required="true"/>
-            <OutputClaim ClaimTypeReferenceId="extension_TOUVersion" DefaultValue="1" />
+            <OutputClaim ClaimTypeReferenceId="extension_TOUVersion" />
           </OutputClaims> 
-          <OutputClaimsTransformations>
-            <OutputClaimsTransformation ReferenceId="GetNewUserAgreeToTermsOfUseConsentDateTime" />
-          </OutputClaimsTransformations>          
         </TechnicalProfile>
         <TechnicalProfile Id="SelfAsserted-LocalAccountSignin-Email">
           <InputClaims/>
@@ -190,6 +178,7 @@
             <ClaimsExchange Id="AADUserReadWithObjectId" TechnicalProfileReferenceId="AAD-UserReadUsingObjectId" />
           </ClaimsExchanges>
         </OrchestrationStep>
+        <!-- Verify against what is the current version of TOU and ask for accept if different -->
         <OrchestrationStep Order="4" Type="ClaimsExchange">
           <Preconditions>
             <Precondition Type="ClaimEquals" ExecuteActionsIf="true">

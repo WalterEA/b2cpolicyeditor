@@ -13,10 +13,10 @@ namespace B2CPolicyEditor.ViewModels
 {
     public class TokenEditor: ObservableObject
     {
-        public TokenEditor(XDocument journey)
+        public TokenEditor(XElement journey)
         {
             _journeyDoc = journey;
-            _tp = journey.Root.Element(Constants.dflt + "RelyingParty").Element(Constants.dflt + "TechnicalProfile");
+            _tp = journey.Element(Constants.dflt + "RelyingParty").Element(Constants.dflt + "TechnicalProfile");
             ProtocolName = _tp.Element(Constants.dflt + "Protocol").Attribute("Name").Value;
             Claims = new ObservableCollection<ClaimUsage>();
             _tp.BuildClaimCollection("OutputClaims", "OutputClaim", Claims);
@@ -47,7 +47,7 @@ namespace B2CPolicyEditor.ViewModels
             }
 
         }
-        XDocument _journeyDoc;
+        XElement _journeyDoc;
         XElement _tp;
         bool _inChangeTransaction = false;
         public string ProtocolName

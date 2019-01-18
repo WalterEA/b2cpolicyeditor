@@ -244,6 +244,7 @@ namespace B2CPolicyEditor.ViewModels
                 var xml = XDocument.Load(System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceStream("B2CPolicyEditor.IdPPolicies.AddTermsOfUse.xml"));
                 App.PolicySet.Base.Merge(xml);
                 UpdateTree();
+                // Ask for current TOU version number, update user journeys and claim creation appropriately
                 MessageBox.Show("Done");
             });
 
@@ -457,7 +458,7 @@ namespace B2CPolicyEditor.ViewModels
                     {
                         Name = journeyDoc.Root.Attribute("PolicyId").Value.Substring(7),  // skip B2C_1A_
                         DataSource = journeyDoc.Root,
-                        OnSelect = new DelegateCommand((obj) => DetailView = new Views.TokenEditor() { DataContext = new ViewModels.TokenEditor((XDocument)obj) }),
+                        OnSelect = new DelegateCommand((obj) => DetailView = new Views.TokenEditor() { DataContext = new ViewModels.TokenEditor((XElement) obj) }),
                         Category = TreeViewVMItem.TreeViewItemCatorgies.Detail,
                         DetailType = TreeViewVMItem.TreeViewItemDetails.Token,
                     });

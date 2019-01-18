@@ -179,6 +179,26 @@ namespace B2CPolicyEditor.Models
             }
             return doc;
         }
+        bool _isDevMode;
+        [JsonIgnore]
+        public bool IsDeveloperMode
+        {
+            get
+            {
+                var devMode = _base.Root.Attribute("DeploymentMode");
+                return devMode == null ? false : devMode.Value == "Development";
+            }
+            set
+            {
+                IsDirty = true;
+                var mode = value ? "Development": "Production";
+                _base.Root.SetAttributeValue("DeploymentMode", mode);
+                foreach (var j in _journeys)
+                {
+                    j.Root.SetAttributeValue("DeploymentMode", mode);
+                }
+            }
+        }
         [JsonIgnore]
         public string Domain
         {

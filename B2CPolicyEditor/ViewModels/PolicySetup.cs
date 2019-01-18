@@ -26,6 +26,7 @@ namespace B2CPolicyEditor.ViewModels
             IEFProxyAppId = App.PolicySet.IEFProxyAppId;
             ExtensionAppId = App.PolicySet.B2CExtensionAppId;
             ExtensionObjId = App.PolicySet.B2CExtensionObjId;
+            IsDeveloperMode = App.PolicySet.IsDeveloperMode;
         }
         private async Task VerifyB2CSetup()
         {
@@ -222,7 +223,16 @@ namespace B2CPolicyEditor.ViewModels
             }
         }
         private string _ExtensionObjId;
-
+        public bool IsDeveloperMode
+        {
+            get { return _IsDeveloperMode; }
+            set
+            {
+                if (Set(ref _IsDeveloperMode, value))
+                    App.PolicySet.IsDeveloperMode = value;
+            }
+        }
+        private bool _IsDeveloperMode;
 
 
         public ICommand VerifyB2CSetupCmd { get; private set; }
