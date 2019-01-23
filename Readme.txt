@@ -1,9 +1,16 @@
-1. Works only with Base and journey xmls - does not use Extensions (all changes done in Base)
-2. All policies must be in a single folder - single base and any number of journey policies.
-3. To configure IEF/Proxy apps needs admin login to B2C tenant
-4. To configure AAD as IdP needs admin login to the AAD tenant
-5. Scenarios tested (at some stage):
-   1. Download and configure one of existing Starter Pack journeys to use a B2C tenant
-   2. Add/change claims
-   3. Add/change claims for a TP in ClaimsProvider or RelyingParty
-   4. Add and configure social, AAD or SAML IdPs
+A WPF which aids in editing Azure AD B2C Identity Experience Framework Xml files.
+Note: this application does NOT use the IEF Extension xml file at all - all definitions are included in either the Base file or individual journey policy files.
+
+Functionality:
+1. New... - loads IEF files from the Starter Pack. Allows user to define a prefix to be used in all policy names. A general options page, described in detail below is displayed.
+2. Load... - loads policies local folder.
+3. Save... - saved all policies to local folder updating policy names with the chosen profix and ensuring that base policy names are set correctly.
+4. Add IdP - displays dialog to select IdP type and collects relevant client id/secret. Adds appropriate profile to Base policy and selected user journeys.
+5. Add REST Api... - collects data re REST Api and creates an appropriate profile in Base.
+6. Receipies menu has options to add policies to support additional functionality:
+   a) userid based local users (existing email option is not removed).
+   b) requirement to have user acknowldge Terms of Use conditions on signup and subsequentkly on signin IF the version of ToU has changed.
+
+The navigation pane on the left-hand side allows further editing on objects it displays. In particular:
+1. Claims - you can add new claim types (extension_ prefix will be added by the app)
+2. IdPs/journeys, etc - you can change input/output/persisted claims lists for these objects
