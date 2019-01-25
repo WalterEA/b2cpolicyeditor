@@ -101,6 +101,7 @@
     <Compile Include="ViewModels\TechnicalProfileClaims.cs" />
     <Compile Include="ViewModels\TokenEditor.cs" />
     <Compile Include="ViewModels\TokenIssuerDetails.cs" />
+    <Compile Include="ViewModels\TOUSettings.cs" />
     <Compile Include="Views\AADIdP.xaml.cs">
       <DependentUpon>AADIdP.xaml</DependentUpon>
     </Compile>
@@ -160,6 +161,9 @@
     </Compile>
     <Compile Include="Views\TokenIssuers.xaml.cs">
       <DependentUpon>TokenIssuers.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TOUSettings.xaml.cs">
+      <DependentUpon>TOUSettings.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -253,6 +257,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\TOUSettings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -343,7 +351,9 @@
     <EmbeddedResource Include="IdPPolicies\REST.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="IdPPolicies\UsingUserId.xml" />
+    <EmbeddedResource Include="Recipies\UsingUserId.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="IdPPolicies\UserJourney.xml" />
@@ -356,6 +366,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="IdPPolicies\AddTermsOfUse.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Recipies\AddTermsOfUse.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -93,11 +93,11 @@ namespace B2CPolicyEditor.Models
                     //_extensions = LoadFromStarterPack(baseDir, "TrustFrameworkExtensions");
                     //_extension.Root.Element(Constants.dflt + "ClaimsProviders").Elements().First().Remove(); // remove FB
                     var j = LoadFromStarterPack(baseDir, "SignUpOrSignin");
-                    _journeys.Add(j);
+                    if (j != null) _journeys.Add(j);
                     j = LoadFromStarterPack(baseDir, "ProfileEdit");
-                    _journeys.Add(j);
+                    if (j != null) _journeys.Add(j);
                     j = LoadFromStarterPack(baseDir, "PasswordReset");
-                    _journeys.Add(j);
+                    if (j != null) _journeys.Add(j);
                 } catch(Exception ex) 
                 {
                     if (_base == null)

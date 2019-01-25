@@ -10,6 +10,7 @@ namespace B2CPolicyEditor.Models
     public static class Constants
     {
         public static XNamespace dflt = "http://schemas.microsoft.com/online/cpim/schemas/2013/06";
+        public static XNamespace merge = "http://mrochon/schemas/mergespec";
         public static string PolicyBaseUrl = "https://raw.githubusercontent.com/Azure-Samples/active-directory-b2c-custom-policy-starterpack/master/{0}/";
         public static string[] PolicyFolderNames =
         {

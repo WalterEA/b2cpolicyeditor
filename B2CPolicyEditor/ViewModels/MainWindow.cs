@@ -225,7 +225,7 @@ namespace B2CPolicyEditor.ViewModels
             RecUserId = new DelegateCommand(() =>
             {
                 if (App.PolicySet.Base == null) return;
-                var xml = XDocument.Load(System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceStream("B2CPolicyEditor.IdPPolicies.UsingUserId.xml"));
+                var xml = XDocument.Load(System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceStream("B2CPolicyEditor.Recipies.UsingUserId.xml"));
                 App.PolicySet.Base.Merge(xml);
                 UpdateTree();
             });
@@ -241,11 +241,17 @@ namespace B2CPolicyEditor.ViewModels
             AddTOU = new DelegateCommand(() =>
             {
                 if (App.PolicySet.Base == null) return;
-                var xml = XDocument.Load(System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceStream("B2CPolicyEditor.IdPPolicies.AddTermsOfUse.xml"));
-                App.PolicySet.Base.Merge(xml);
-                UpdateTree();
-                // Ask for current TOU version number, update user journeys and claim creation appropriately
-                MessageBox.Show("Done");
+                var vm = new ViewModels.TOUSettings(App.PolicySet.Base);
+                var wiz = new Views.TOUSettings() { DataContext = vm };
+                vm.Done += (r) =>
+                {
+                    var xml = XDocument.Load(System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceStream("B2CPolicyEditor.Recipies.AddTermsOfUse.xml"));
+                    App.PolicySet.Base.MergeEx(xml);
+                    App.PolicySet.Base.SetTOUVersion(vm.NewVersionId);
+                    UpdateTree();
+                    wiz.Close();
+                };
+                wiz.ShowDialog();
             });
 
             PolicySetup = new DelegateCommand(() => DetailView = new Views.PolicySetup());

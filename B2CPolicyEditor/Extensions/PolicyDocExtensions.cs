@@ -137,7 +137,12 @@ namespace B2CPolicyEditor.Extensions
             var ret = parent.Element(Constants.dflt + name);
             return ret;
         }
+
         public static IEnumerable<XElement> elements(this XElement parent, string name)
+        {
+            return parent.Elements(Constants.dflt + name);
+        }
+        public static IEnumerable<XElement> elements(this IEnumerable<XElement> parent, string name)
         {
             return parent.Elements(Constants.dflt + name);
         }
@@ -147,6 +152,11 @@ namespace B2CPolicyEditor.Extensions
                                 .Element(Constants.dflt + "ClaimsSchema")
                                     .Elements(Constants.dflt + "ClaimType"))
             {
+                if (target.Root.Element(Constants.dflt + "BuildingBlocks")
+                                .Element(Constants.dflt + "ClaimsSchema")
+                                    .Elements(Constants.dflt + "ClaimType")
+                                        .FirstOrDefault(c => c.Attribute("Id")
+                                            .Value == claimType.Attribute("Id").Value) == null)
                 target.Root.Element(Constants.dflt + "BuildingBlocks")
                                 .Element(Constants.dflt + "ClaimsSchema").Add(claimType);
             }
@@ -154,7 +164,12 @@ namespace B2CPolicyEditor.Extensions
                                 .Element(Constants.dflt + "ClaimsTransformations")
                                     .Elements(Constants.dflt + "ClaimsTransformation"))
             {
-                target.Root.Element(Constants.dflt + "BuildingBlocks")
+                if (target.Root.Element(Constants.dflt + "BuildingBlocks")
+                                .Element(Constants.dflt + "ClaimsTransformations")
+                                    .Elements(Constants.dflt + "ClaimsTransformation")
+                                        .FirstOrDefault(c => c.Attribute("Id")
+                                            .Value == transform.Attribute("Id").Value) == null)
+                    target.Root.Element(Constants.dflt + "BuildingBlocks")
                                 .Element(Constants.dflt + "ClaimsTransformations").Add(transform);
             }
             foreach (var sourceCP in source.Root.Element(Constants.dflt + "ClaimsProviders")
@@ -194,13 +209,6 @@ namespace B2CPolicyEditor.Extensions
                 {
                     var policyName = journey.Attribute("Id").Value;
                     var journeyRP = XDocument.Load(System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceStream("B2CPolicyEditor.IdPPolicies.UserJourney.xml"));
-                    // All following will be done at save time (SetPolicyHeader)
-                    //journeyRP.Root.Attribute("TenantId").Value = App.PolicySet.Domain;
-                    //journeyRP.Root.Attribute("PolicyId").Value = $"B2C_1A_{App.PolicySet.NamePrefix}{policyName}";
-                    //journeyRP.Root.Attribute("PublicPolicyUri").Value = $"http://{App.PolicySet.Domain}/B2C_1A_{App.PolicySet.NamePrefix}{policyName}";
-                    //var basePolicy = journeyRP.Root.Element(Constants.dflt + "BasePolicy");
-                    //basePolicy.Element(Constants.dflt + "TenantId").Value = App.PolicySet.Domain;
-                    //basePolicy.Element(Constants.dflt + "PolicyId").Value = journeyRP.Root.Attribute("PolicyId").Value;
                     journeyRP.Root.Element(Constants.dflt + "RelyingParty")
                         .Element(Constants.dflt + "DefaultUserJourney").SetAttributeValue("ReferenceId", policyName);
                     App.PolicySet.Journeys.Add(journeyRP);
@@ -208,6 +216,115 @@ namespace B2CPolicyEditor.Extensions
                 }
             }
 
+            return target;
+        }
+        public static XDocument MergeEx(this XDocument target, XDocument source)
+        {
+            foreach (var claimType in source.Root.Element(Constants.dflt + "BuildingBlocks")
+                                .Element(Constants.dflt + "ClaimsSchema")
+                                    .Elements(Constants.dflt + "ClaimType"))
+            {
+                if (target.Root.Element(Constants.dflt + "BuildingBlocks")
+                                .Element(Constants.dflt + "ClaimsSchema")
+                                    .Elements(Constants.dflt + "ClaimType")
+                                        .FirstOrDefault(c => c.Attribute("Id")
+                                            .Value == claimType.Attribute("Id").Value) == null)
+                    target.Root.Element(Constants.dflt + "BuildingBlocks")
+                                    .Element(Constants.dflt + "ClaimsSchema").Add(claimType);
+            }
+            foreach (var transform in source.Root.Element(Constants.dflt + "BuildingBlocks")
+                                .Element(Constants.dflt + "ClaimsTransformations")
+                                    .Elements(Constants.dflt + "ClaimsTransformation"))
+            {
+                if (target.Root.Element(Constants.dflt + "BuildingBlocks")
+                                .Element(Constants.dflt + "ClaimsTransformations")
+                                    .Elements(Constants.dflt + "ClaimsTransformation")
+                                        .FirstOrDefault(c => c.Attribute("Id")
+                                            .Value == transform.Attribute("Id").Value) == null)
+                    target.Root.Element(Constants.dflt + "BuildingBlocks")
+                                .Element(Constants.dflt + "ClaimsTransformations").Add(transform);
+            }
+            foreach (var sourceCP in source.Root.Element(Constants.dflt + "ClaimsProviders")
+                                .Elements(Constants.dflt + "ClaimsProvider"))
+            {
+                var targetCP = target.Root.Element(Constants.dflt + "ClaimsProviders")
+                                        .Elements(Constants.dflt + "ClaimsProvider")
+                                            .FirstOrDefault(c => c.Element(Constants.dflt + "DisplayName").Value == sourceCP.Element(Constants.dflt + "DisplayName").Value);
+                if (targetCP == null)
+                    target.Root.Element(Constants.dflt + "ClaimsProviders").Add(sourceCP);
+                else
+                {
+                    foreach (var sourceTP in sourceCP.Element(Constants.dflt + "TechnicalProfiles").Elements(Constants.dflt + "TechnicalProfile"))
+                    {
+                        var targetTP = targetCP.Element(Constants.dflt + "TechnicalProfiles").Elements(Constants.dflt + "TechnicalProfile").FirstOrDefault(p => p.Attribute("Id").Value == sourceTP.Attribute("Id").Value);
+                        if (targetTP == null)
+                            targetCP.Element(Constants.dflt + "TechnicalProfiles").Add(sourceTP);
+                        else
+                            targetTP
+                                .MergeCollections(sourceTP, "Metadata", "Item", "Key")
+                                .MergeCollections(sourceTP, "InputClaimsTransformations", "InputClaimsTransformation", "ReferenceId")
+                                .MergeCollections(sourceTP, "InputClaims", "InputClaim", "ClaimTypeReferenceId")
+                                .MergeCollections(sourceTP, "PersistedClaims", "PersistedClaim", "ClaimTypeReferenceId")
+                                .MergeCollections(sourceTP, "OutputClaims", "OutputClaim", "ClaimTypeReferenceId")
+                                .MergeCollections(sourceTP, "OutputClaimsTransformations", "OutputClaimsTransformation", "ReferenceId");
+                    }
+                }
+            }
+            foreach (var journey in source.Root.Element(Constants.dflt + "UserJourneys")
+                                    .Elements(Constants.dflt + "UserJourney"))
+            {
+                var id = journey.Attribute("Id").Value;
+                if (id == "*")
+                {
+                    foreach(var tj in target.Root.element("UserJourneys")
+                        .elements("UserJourney"))
+                            tj.MergeJourneys(journey);
+                }
+                else
+                {
+                    var currJourney = target.Root.element("UserJourneys")
+                        .elements("UserJourney")
+                            .FirstOrDefault(j => j.Attribute("Id")
+                                .Value == journey.Attribute("Id").Value);
+                    if (currJourney != null)
+                        currJourney.Remove();
+                    target.Root.Element(Constants.dflt + "UserJourneys").Add(journey);
+                    if (currJourney == null)
+                    {
+                        var policyName = journey.Attribute("Id").Value;
+                        var journeyRP = XDocument.Load(System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceStream("B2CPolicyEditor.IdPPolicies.UserJourney.xml"));
+                        journeyRP.Root.Element(Constants.dflt + "RelyingParty")
+                            .Element(Constants.dflt + "DefaultUserJourney").SetAttributeValue("ReferenceId", policyName);
+                        App.PolicySet.Journeys.Add(journeyRP);
+                        App.PolicySet.FileNames.Add(policyName);
+                    }
+                }
+            }
+
+            return target;
+        }
+        public static XElement MergeJourneys(this XElement target, XElement source)
+        {
+            foreach(var step in source.element("OrchestrationSteps").elements("OrchestrationStep"))
+            {
+                var mergeInstruction = step.Attribute(Constants.merge + "Order")?.Value;
+                if (!String.IsNullOrEmpty(mergeInstruction))
+                {
+                    step.Attribute(Constants.merge + "Order").Remove();
+                    switch (mergeInstruction)
+                    {
+                        case "BeforeLast":
+                            var last = target.element("OrchestrationSteps").elements("OrchestrationStep").Last();
+                            var stepNo = int.Parse(last.Attribute("Order").Value);
+                            last.SetAttributeValue("Order", stepNo + 1);
+                            step.SetAttributeValue("Order", stepNo);
+                            last.AddBeforeSelf(step);
+                            break;
+                        default:
+                            throw new Exception("Bad merge instruction");
+                    }
+                }
+            }
             return target;
         }
         public static XElement MergeCollections(this XElement target, XElement source, string collectionName, string itemName, string keyAttr)
@@ -241,6 +358,37 @@ namespace B2CPolicyEditor.Extensions
                 target.Element(Constants.dflt + collectionName).Add(c);
             }
             return target;
+        }
+        internal static void SetTOUVersion(this XDocument doc, string version)
+        {
+            doc.Root
+                .element("BuildingBlocks")
+                    .element("ClaimsTransformations")
+                        .elements("ClaimsTransformation")
+                            .First(t => t.Attribute("Id").Value == "UpdateTOUVersion")
+                                .element("InputParameters")
+                                    .element("InputParameter")
+                                        .SetAttributeValue("Value", version);
+            var checkStep = doc.Root
+                .element("UserJourneys")
+                    .elements("UserJourney")
+                        .First(j => j.Attribute("Id").Value == "SignUpOrSignIn")
+                            .element("OrchestrationSteps")
+                                .elements("OrchestrationStep")
+                                    .First(s =>
+                                        s.element("ClaimsExchanges")
+                                            .element("ClaimsExchange")
+                                                .Attribute("Id").Value == "ConfirmUpdatedTOU");
+            checkStep.element("Preconditions")
+                .element("Precondition")
+                    .elements("Value").Skip(1).First().Value = version;
+        }
+        internal static void ChangeLocalUserIdTypeInJourneys(this XDocument doc, bool isUsername)
+        {
+            foreach(var j in doc.Root.element("UserJourneys").elements("UserJourney").elements("OrchestrationSteps").elements("OrchestrationStep"))
+            {
+
+            }
         }
     }
 }
