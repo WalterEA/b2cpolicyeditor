@@ -227,6 +227,7 @@ namespace B2CPolicyEditor.ViewModels
                 if (App.PolicySet.Base == null) return;
                 var xml = XDocument.Load(System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceStream("B2CPolicyEditor.Recipies.UsingUserId.xml"));
                 App.PolicySet.Base.Merge(xml);
+                App.PolicySet.Base.ChangeLocalUserIdTypeInJourneys(true);
                 UpdateTree();
             });
             AddSAMLAsIdP = new DelegateCommand(() =>
@@ -246,7 +247,7 @@ namespace B2CPolicyEditor.ViewModels
                 vm.Done += (r) =>
                 {
                     var xml = XDocument.Load(System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceStream("B2CPolicyEditor.Recipies.AddTermsOfUse.xml"));
-                    App.PolicySet.Base.MergeEx(xml);
+                    App.PolicySet.Base.Merge(xml);
                     App.PolicySet.Base.SetTOUVersion(vm.NewVersionId);
                     UpdateTree();
                     wiz.Close();

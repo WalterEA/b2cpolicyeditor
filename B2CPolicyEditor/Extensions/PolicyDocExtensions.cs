@@ -146,79 +146,62 @@ namespace B2CPolicyEditor.Extensions
         {
             return parent.Elements(Constants.dflt + name);
         }
-        public static XDocument Merge(this XDocument target, XDocument source)
-        {
-            foreach(var claimType in source.Root.Element(Constants.dflt + "BuildingBlocks")
-                                .Element(Constants.dflt + "ClaimsSchema")
-                                    .Elements(Constants.dflt + "ClaimType"))
-            {
-                if (target.Root.Element(Constants.dflt + "BuildingBlocks")
-                                .Element(Constants.dflt + "ClaimsSchema")
-                                    .Elements(Constants.dflt + "ClaimType")
-                                        .FirstOrDefault(c => c.Attribute("Id")
-                                            .Value == claimType.Attribute("Id").Value) == null)
-                target.Root.Element(Constants.dflt + "BuildingBlocks")
-                                .Element(Constants.dflt + "ClaimsSchema").Add(claimType);
-            }
-            foreach (var transform in source.Root.Element(Constants.dflt + "BuildingBlocks")
-                                .Element(Constants.dflt + "ClaimsTransformations")
-                                    .Elements(Constants.dflt + "ClaimsTransformation"))
-            {
-                if (target.Root.Element(Constants.dflt + "BuildingBlocks")
-                                .Element(Constants.dflt + "ClaimsTransformations")
-                                    .Elements(Constants.dflt + "ClaimsTransformation")
-                                        .FirstOrDefault(c => c.Attribute("Id")
-                                            .Value == transform.Attribute("Id").Value) == null)
-                    target.Root.Element(Constants.dflt + "BuildingBlocks")
-                                .Element(Constants.dflt + "ClaimsTransformations").Add(transform);
-            }
-            foreach (var sourceCP in source.Root.Element(Constants.dflt + "ClaimsProviders")
-                                .Elements(Constants.dflt + "ClaimsProvider"))
-            {
-                var targetCP = target.Root.Element(Constants.dflt + "ClaimsProviders")
-                                        .Elements(Constants.dflt + "ClaimsProvider")
-                                            .FirstOrDefault(c => c.Element(Constants.dflt + "DisplayName").Value == sourceCP.Element(Constants.dflt + "DisplayName").Value);
-                if (targetCP == null)
-                    target.Root.Element(Constants.dflt + "ClaimsProviders").Add(sourceCP);
-                else
-                {
-                    foreach (var sourceTP in sourceCP.Element(Constants.dflt + "TechnicalProfiles").Elements(Constants.dflt + "TechnicalProfile"))
-                    {
-                        var targetTP = targetCP.Element(Constants.dflt + "TechnicalProfiles").Elements(Constants.dflt + "TechnicalProfile").FirstOrDefault(p => p.Attribute("Id").Value == sourceTP.Attribute("Id").Value);
-                        if (targetTP == null)
-                            targetCP.Element(Constants.dflt + "TechnicalProfiles").Add(sourceTP);
-                        else
-                            targetTP
-                                .MergeCollections(sourceTP, "Metadata", "Item", "Key")
-                                .MergeCollections(sourceTP, "InputClaimsTransformations", "InputClaimsTransformation", "ReferenceId")
-                                .MergeCollections(sourceTP, "InputClaims", "InputClaim", "ClaimTypeReferenceId")
-                                .MergeCollections(sourceTP, "PersistedClaims", "PersistedClaim", "ClaimTypeReferenceId")
-                                .MergeCollections(sourceTP, "OutputClaims", "OutputClaim", "ClaimTypeReferenceId")
-                                .MergeCollections(sourceTP, "OutputClaimsTransformations", "OutputClaimsTransformation", "ReferenceId");
-                    }
-                }
-            }
-            foreach (var journey in source.Root.Element(Constants.dflt + "UserJourneys")
-                                    .Elements(Constants.dflt + "UserJourney"))
-            {
-                var currJourney = target.Root.Element(Constants.dflt + "UserJourneys").Elements(Constants.dflt + "UserJourney").FirstOrDefault(j => j.Attribute("Id").Value == journey.Attribute("Id").Value);
-                if (currJourney != null)
-                    currJourney.Remove();
-                target.Root.Element(Constants.dflt + "UserJourneys").Add(journey);
-                if (currJourney == null)
-                {
-                    var policyName = journey.Attribute("Id").Value;
-                    var journeyRP = XDocument.Load(System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceStream("B2CPolicyEditor.IdPPolicies.UserJourney.xml"));
-                    journeyRP.Root.Element(Constants.dflt + "RelyingParty")
-                        .Element(Constants.dflt + "DefaultUserJourney").SetAttributeValue("ReferenceId", policyName);
-                    App.PolicySet.Journeys.Add(journeyRP);
-                    App.PolicySet.FileNames.Add(policyName);
-                }
-            }
+        //public static XDocument Merge(this XDocument target, XDocument source)
+        //{
+        //    foreach(var claimType in source.Root.Element(Constants.dflt + "BuildingBlocks")
+        //                        .Element(Constants.dflt + "ClaimsSchema")
+        //                            .Elements(Constants.dflt + "ClaimType"))
+        //    {
+        //        if (target.Root.Element(Constants.dflt + "BuildingBlocks")
+        //                        .Element(Constants.dflt + "ClaimsSchema")
+        //                            .Elements(Constants.dflt + "ClaimType")
+        //                                .FirstOrDefault(c => c.Attribute("Id")
+        //                                    .Value == claimType.Attribute("Id").Value) == null)
+        //        target.Root.Element(Constants.dflt + "BuildingBlocks")
+        //                        .Element(Constants.dflt + "ClaimsSchema").Add(claimType);
+        //    }
+        //    foreach (var transform in source.Root.Element(Constants.dflt + "BuildingBlocks")
+        //                        .Element(Constants.dflt + "ClaimsTransformations")
+        //                            .Elements(Constants.dflt + "ClaimsTransformation"))
+        //    {
+        //        if (target.Root.Element(Constants.dflt + "BuildingBlocks")
+        //                        .Element(Constants.dflt + "ClaimsTransformations")
+        //                            .Elements(Constants.dflt + "ClaimsTransformation")
+        //                                .FirstOrDefault(c => c.Attribute("Id")
+        //                                    .Value == transform.Attribute("Id").Value) == null)
+        //            target.Root.Element(Constants.dflt + "BuildingBlocks")
+        //                        .Element(Constants.dflt + "ClaimsTransformations").Add(transform);
+        //    }
+        //    foreach (var sourceCP in source.Root.Element(Constants.dflt + "ClaimsProviders")
+        //                        .Elements(Constants.dflt + "ClaimsProvider"))
+        //    {
+        //        var targetCP = target.Root.Element(Constants.dflt + "ClaimsProviders")
+        //                                .Elements(Constants.dflt + "ClaimsProvider")
+        //                                    .FirstOrDefault(c => c.Element(Constants.dflt + "DisplayName").Value == sourceCP.Element(Constants.dflt + "DisplayName").Value);
+        //        if (targetCP == null)
+        //            target.Root.Element(Constants.dflt + "ClaimsProviders").Add(sourceCP);
+        //        else
+        //        {
+        //            foreach (var sourceTP in sourceCP.Element(Constants.dflt + "TechnicalProfiles").Elements(Constants.dflt + "TechnicalProfile"))
+        //            {
+        //                var targetTP = targetCP.Element(Constants.dflt + "TechnicalProfiles").Elements(Constants.dflt + "TechnicalProfile").FirstOrDefault(p => p.Attribute("Id").Value == sourceTP.Attribute("Id").Value);
+        //                if (targetTP == null)
+        //                    targetCP.Element(Constants.dflt + "TechnicalProfiles").Add(sourceTP);
+        //                else
+        //                    targetTP
+        //                        .MergeCollections(sourceTP, "Metadata", "Item", "Key")
+        //                        .MergeCollections(sourceTP, "InputClaimsTransformations", "InputClaimsTransformation", "ReferenceId")
+        //                        .MergeCollections(sourceTP, "InputClaims", "InputClaim", "ClaimTypeReferenceId")
+        //                        .MergeCollections(sourceTP, "PersistedClaims", "PersistedClaim", "ClaimTypeReferenceId")
+        //                        .MergeCollections(sourceTP, "OutputClaims", "OutputClaim", "ClaimTypeReferenceId")
+        //                        .MergeCollections(sourceTP, "OutputClaimsTransformations", "OutputClaimsTransformation", "ReferenceId");
+        //            }
+        //        }
+        //    }
 
-            return target;
-        }
-        public static XDocument MergeEx(this XDocument target, XDocument source)
+        //    return target;
+        //}
+        public static XDocument Merge(this XDocument target, XDocument source)
         {
             foreach (var claimType in source.Root.Element(Constants.dflt + "BuildingBlocks")
                                 .Element(Constants.dflt + "ClaimsSchema")
@@ -383,12 +366,40 @@ namespace B2CPolicyEditor.Extensions
                 .element("Precondition")
                     .elements("Value").Skip(1).First().Value = version;
         }
-        internal static void ChangeLocalUserIdTypeInJourneys(this XDocument doc, bool isUsername)
+        internal static void ChangeLocalUserIdTypeInJourneys(this XDocument doc, bool isUserId)
         {
-            foreach(var j in doc.Root.element("UserJourneys").elements("UserJourney").elements("OrchestrationSteps").elements("OrchestrationStep"))
+            foreach(var step in doc.Root
+                .element("UserJourneys")
+                    .elements("UserJourney")
+                        .elements("OrchestrationSteps")
+                            .elements("OrchestrationStep"))
             {
-
+                var exchanges = step.element("ClaimsExchanges");
+                if (exchanges != null)
+                {
+                    foreach (var exchange in exchanges.elements("ClaimsExchange"))
+                    {
+                        var tp = exchange.Attribute("TechnicalProfileReferenceId");
+                        if (isUserId)
+                        {
+                            var map = EmailToUserIdTPMappings.FirstOrDefault(t => t.Item1 == tp.Value);
+                            if (map != null)
+                                tp.Value = map.Item2;
+                        } else
+                        {
+                            var map = EmailToUserIdTPMappings.FirstOrDefault(t => t.Item2 == tp.Value);
+                            if (map != null)
+                                tp.Value = map.Item1;
+                        }
+                    }
+                }
             }
         }
+        private static List<Tuple<string, string>> EmailToUserIdTPMappings = new List<Tuple<string, string>>()
+        {
+            new Tuple<string, string>("SelfAsserted-LocalAccountSignin-Email", "SelfAsserted-LocalAccountSignin-UserId"),
+            new Tuple<string, string>("LocalAccountSignUpWithLogonEmail", "LocalAccountSignupWithUserId"),
+            new Tuple<string, string>("LocalAccountDiscoveryUsingEmailAddress", "LocalAccountDiscoveryUsingUserId")
+        };
     }
 }
