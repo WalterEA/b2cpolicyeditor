@@ -38,17 +38,22 @@
                 <RowDefinition />
             </Grid.RowDefinitions>
             <Menu>
-                    <MenuItem Header="New..." Command="{Binding NewPolicy}" Margin="10" ToolTip="Download one of the Starter Pack policy sets" />                
-                    <MenuItem Header="Load..." Command="{Binding Open}" Margin="10" ToolTip="Read existing policy set (base and journeys) from a folder" />
-                    <MenuItem Header="Save..." Command="{Binding Save}" Margin="10" ToolTip="Save current policy set to a folder" />
-                    <MenuItem Header="Add IdP..." Command="{Binding AddIdP}" Margin="10" ToolTip="Add a new Identity Provider (social or custom)" />
-                    <MenuItem Header="Add REST API" Command="{Binding AddRESTApi}" Margin="10" ToolTip="Add a new REST API definition" />
-                    <MenuItem Header="Add journey type..." Command="{Binding AddJourneyType}" Margin="10" ToolTip="Create a new journey" />
-                    <MenuItem Header="Add journey step..." Command="{Binding AddJourneyStep}" Margin="10" ToolTip="Add new journey step to journey" />
-                    <MenuItem Header="Recipies">
-                        <MenuItem Header="Local users use ids" Command="{Binding RecUserId}" />
-                        <MenuItem Header="Add SAML RP" />
-                        <MenuItem Header="Set Terms and Conditions version" Command="{Binding AddTOU}" />
+                <MenuItem Header="Project" Margin="0,0,10,0">
+                    <MenuItem Header="New..." Command="{Binding NewPolicy}" ToolTip="Download one of the Starter Pack policy sets" />
+                    <MenuItem Header="Load..." Command="{Binding Open}" ToolTip="Read existing policy set (base and journeys) from a folder" />
+                    <MenuItem Header="Save..." Command="{Binding Save}" ToolTip="Save current policy set to a folder" />
+                </MenuItem>
+                <MenuItem Header="Claim providers" Margin="0,0,10,0">
+                    <MenuItem Header="Add IdP..." Command="{Binding AddIdP}" ToolTip="Add a new Identity Provider (social or custom)" />
+                    <MenuItem Header="Add REST API" Command="{Binding AddRESTApi}" ToolTip="Add a new REST API definition" />
+                </MenuItem>
+                <MenuItem Header="Journeys" Margin="0,0,10,0">
+                    <MenuItem Header="Add journey type..." Command="{Binding AddJourneyType}" ToolTip="Create a new journey" />
+                    <MenuItem Header="Add journey step..." Command="{Binding AddJourneyStep}" ToolTip="Add new journey step to journey" />
+                </MenuItem>
+                <MenuItem Header="Recipies" Margin="0,0,10,0">
+                    <MenuItem Header="Local users use ids" Command="{Binding RecUserId}" />
+                    <MenuItem Header="Set Terms and Conditions version" Command="{Binding AddTOU}" />
                 </MenuItem>
             </Menu>
             <Grid Grid.Row="1">

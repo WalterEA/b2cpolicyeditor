@@ -32,12 +32,10 @@ namespace B2CPolicyEditor.ViewModels
         {
             MainWindow.Current.IsDisabled = true;
             await LoginImplAsync();
-
             App.PolicySet.Domain = await GetDomainAsync();
-
             // Do keys exist, if not create
-
             // Do apps exist, if not create
+
             var app = await GetAppAsync(IEFAppName);
             if (app != null)
             {
@@ -134,7 +132,8 @@ namespace B2CPolicyEditor.ViewModels
 
         private static async Task<AuthenticationResult> SilentLoginImpl()
         {
-            var ctx = new AuthenticationContext("https://login.microsoftonline.com/common", new FileCache());
+            //TODO: use https://docs.microsoft.com/en-us/rest/api/resources/tenants/list to display list of available tenants
+            var ctx = new AuthenticationContext("https://login.microsoftonline.com/common"); //, new FileCache());
             var tokens = await ctx.AcquireTokenSilentAsync(
                 "https://graph.windows.net",
                 ConfigurationManager.AppSettings["aad:ClientId"]);
@@ -239,10 +238,11 @@ namespace B2CPolicyEditor.ViewModels
 
         private async Task<bool> LoginImplAsync()
         {
-            var ctx = new AuthenticationContext("https://login.microsoftonline.com/common", new FileCache());
+            var ctx = new AuthenticationContext("https://login.microsoftonline.com/common"); //, new FileCache());
             try
             {
                 var tokens = await ctx.AcquireTokenAsync(
+                    //"https://management.core.windows.net",
                     "https://graph.windows.net",
                     ConfigurationManager.AppSettings["aad:ClientId"],
                     new Uri("https://b2cpolicyeditor"),
