@@ -527,6 +527,15 @@ namespace B2CPolicyEditor.ViewModels
             get { return _detailView;  }
             set
             {
+                if (_detailView != null)
+                {
+                    var cont = _detailView.Content as FrameworkElement;
+                    if(cont != null)
+                    {
+                        var data = cont.DataContext as IViewModel;
+                        if (data != null) data.Closing();
+                    }
+                }
                 Set(ref _detailView, value);
             }
         }

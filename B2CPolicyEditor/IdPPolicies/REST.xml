@@ -6,7 +6,13 @@
             <Item Key="ServiceUrl">https://url</Item>
             <Item Key="AuthenticationType">None</Item>
             <Item Key="SendClaimsIn">QueryString</Item>
+            <Item Key="AllowInsecureAuthInProduction">true</Item>            
           </Metadata>
+          <CryptographicKeys>
+            <Key Id="BasicAuthenticationUsername" StorageReferenceId="B2C_1A_B2cRestClientId" />
+            <Key Id="BasicAuthenticationPassword" StorageReferenceId="B2C_1A_B2cRestClientSecret" />
+            <Key Id="ClientCertificate" StorageReferenceId="B2C_1A_B2cRestClientCertificate" />
+          </CryptographicKeys>
           <InputClaims>
           </InputClaims>
           <OutputClaims>

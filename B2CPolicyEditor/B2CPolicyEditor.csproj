@@ -89,6 +89,7 @@
     <Compile Include="ViewModels\AADIdP.cs" />
     <Compile Include="ViewModels\ClaimUsage.cs" />
     <Compile Include="ViewModels\CustomAttributes.cs" />
+    <Compile Include="ViewModels\IViewModel.cs" />
     <Compile Include="ViewModels\JourneyEditor.cs" />
     <Compile Include="ViewModels\JourneyStep.cs" />
     <Compile Include="ViewModels\NewPolicyLoad.cs" />
@@ -363,9 +364,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="IdPPolicies\AsSAMLIdP-Endpoint.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="IdPPolicies\AddTermsOfUse.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Recipies\AddTermsOfUse.xml" />

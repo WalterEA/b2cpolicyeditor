@@ -1,16 +1,12 @@
 ﻿using B2CPolicyEditor.Models;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using B2CPolicyEditor.Extensions;
+using DataToolkit;
 
 namespace B2CPolicyEditor.ViewModels
 {
-    public class TechnicalProfileClaims
+    public class TechnicalProfileClaims: ObservableObject
     {
         public TechnicalProfileClaims(XElement tp)
         {
