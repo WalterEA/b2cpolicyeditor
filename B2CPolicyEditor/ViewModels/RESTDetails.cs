@@ -40,6 +40,7 @@ namespace B2CPolicyEditor.ViewModels
             switch (Authentication)
             {
                 case "None":
+                    _tp.SetMetadataValue("AllowInsecureAuthInProduction", "true");
                     break;
                 case "Basic":
                     _tp.element("Metadata").AddAfterSelf(
@@ -50,6 +51,7 @@ namespace B2CPolicyEditor.ViewModels
                             new XElement(Constants.dflt + "Key",
                                 new XAttribute("Id", "BasicAuthenticationPassword"),
                                 new XAttribute("StorageReferenceId", Secret))));
+                    _tp.SetMetadataValue("AllowInsecureAuthInProduction", "false");
                     break;
                 case "Certificate":
                     _tp.element("Metadata").AddAfterSelf(
@@ -57,6 +59,7 @@ namespace B2CPolicyEditor.ViewModels
                             new XElement(Constants.dflt + "Key",
                                 new XAttribute("Id", "ClientCertificate"),
                                 new XAttribute("StorageReferenceId", CertName))));
+                    _tp.SetMetadataValue("AllowInsecureAuthInProduction", "false");
                     break;
             }
         }
