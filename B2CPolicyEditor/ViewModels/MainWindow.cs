@@ -248,7 +248,7 @@ namespace B2CPolicyEditor.ViewModels
                 {
                     var xml = XDocument.Load(System.Reflection.Assembly.GetEntryAssembly().GetManifestResourceStream("B2CPolicyEditor.Recipies.AddTermsOfUse.xml"));
                     App.PolicySet.Base.Merge(xml);
-                    App.PolicySet.Base.SetTOUVersion(vm.NewVersionId);
+                    App.PolicySet.Base.SetTOUVersion(vm.NewVersionId, vm.SignUpJourneys.Where(j => j.IsSelected).Select(j => j.Name));
                     UpdateTree();
                     wiz.Close();
                 };

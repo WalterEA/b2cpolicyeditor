@@ -342,7 +342,7 @@ namespace B2CPolicyEditor.Extensions
             }
             return target;
         }
-        internal static void SetTOUVersion(this XDocument doc, string version)
+        internal static void SetTOUVersion(this XDocument doc, string version, IEnumerable<string> signups)
         {
             doc.Root
                 .element("BuildingBlocks")
@@ -352,19 +352,29 @@ namespace B2CPolicyEditor.Extensions
                                 .element("InputParameters")
                                     .element("InputParameter")
                                         .SetAttributeValue("Value", version);
-            var checkStep = doc.Root
-                .element("UserJourneys")
-                    .elements("UserJourney")
-                        .First(j => j.Attribute("Id").Value == "SignUpOrSignIn")
+            if (signups.First() != null)
+            {
+                foreach(var journey in doc.Root
+                                        .element("UserJourneys")
+                                            .elements("UserJourney")
+                                                .Join(signups, j => j.Attribute("Id").Value, s => s, (j, s) => j))
+                {
+                    try
+                    {
+                        var checkStep = journey
                             .element("OrchestrationSteps")
                                 .elements("OrchestrationStep")
                                     .First(s =>
                                         s.element("ClaimsExchanges")
                                             .element("ClaimsExchange")
                                                 .Attribute("Id").Value == "ConfirmUpdatedTOU");
-            checkStep.element("Preconditions")
-                .element("Precondition")
-                    .elements("Value").Skip(1).First().Value = version;
+                        checkStep.element("Preconditions")
+                            .element("Precondition")
+                                .elements("Value").Skip(1).First().Value = version;
+                    }
+                    catch { }
+                }
+            }
         }
         internal static void ChangeLocalUserIdTypeInJourneys(this XDocument doc, bool isUserId)
         {

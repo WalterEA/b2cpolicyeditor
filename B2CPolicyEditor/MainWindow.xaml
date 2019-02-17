@@ -38,7 +38,7 @@
                 <RowDefinition />
             </Grid.RowDefinitions>
             <Menu>
-                <MenuItem Header="Project" Margin="0,0,10,0">
+                <MenuItem Header="Policies" Margin="0,0,10,0">
                     <MenuItem Header="New..." Command="{Binding NewPolicy}" ToolTip="Download one of the Starter Pack policy sets" />
                     <MenuItem Header="Load..." Command="{Binding Open}" ToolTip="Read existing policy set (base and journeys) from a folder" />
                     <MenuItem Header="Save..." Command="{Binding Save}" ToolTip="Save current policy set to a folder" />

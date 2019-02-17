@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Xml.Linq;
+using B2CPolicyEditor.Extensions;
 
 namespace B2CPolicyEditor.ViewModels
 {
@@ -28,6 +29,18 @@ namespace B2CPolicyEditor.ViewModels
             catch
             {
                 MainWindow.Trace.Add(new TraceItem() { Msg = "No existing version id found." });
+            }
+            SignUpJourneys = new List<UserJourneySelection>();
+            foreach (var j in App.PolicySet.Base.Root
+                                .element("UserJourneys")
+                                    .elements("UserJourney"))
+            {
+                var name = j.Attribute("Id").Value;
+                SignUpJourneys.Add(new UserJourneySelection()
+                {
+                    IsSelected = name == "SignUpOrSignIn",
+                    Name = j.Attribute("Id").Value
+                });
             }
             OnOK = new DelegateCommand(() =>
             {
@@ -51,6 +64,13 @@ namespace B2CPolicyEditor.ViewModels
         }
         public ICommand OnOK { get; set; }
 
+        public List<UserJourneySelection> SignUpJourneys { get; set; }
+
         public event Action<bool> Done;
+    }
+    public class UserJourneySelection
+    {
+        public bool IsSelected { get; set; }
+        public string Name { get; set; }
     }
 }

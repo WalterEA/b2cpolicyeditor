@@ -4,24 +4,46 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         xmlns:local="clr-namespace:B2CPolicyEditor.Views"
-        Title="Terms of Use Version" Height="300" Width="400"
+        Title="Terms of Use Version" Height="450" Width="600"
         mc:Ignorable="d" 
         d:DesignHeight="250" d:DesignWidth="400">
     <Grid>
-        <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <TextBlock Margin="10" TextWrapping="Wrap">
+            Modifies policies to define new custom attributes to store the version of Terms of Use accepted by each user and the date of acceptance. 
+            The user will be required to accept ToU before completing new user setup and, if a new version is entered below, 
+            before completing any journey. A link to the text of ToU should be added to all pages journey pages using UI customization.
+        </TextBlock>
+        <Grid Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="10"/>                
+                <ColumnDefinition MinWidth="140"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition />
                 <RowDefinition />
+                <RowDefinition Height="Auto"/>                
             </Grid.RowDefinitions>
             <TextBlock Text="Current version number:" />
-            <TextBox Margin="10,0,0,0"  Grid.Column="1" Text="{Binding CurrVersionId, Mode=OneWay}" IsEnabled="false"/>
+            <TextBox Margin="10,0,0,0"  Grid.Column="2" Text="{Binding CurrVersionId, Mode=OneWay}" IsEnabled="false"/>
             <TextBlock Grid.Row="1" Text="New version:" />
-            <TextBox Margin="10,0,0,0" Grid.Column="1" Grid.Row="1" Text="{Binding NewVersionId}" />
+            <TextBox Margin="10,0,0,0" Grid.Column="2" Grid.Row="1" Text="{Binding NewVersionId}" />
+            <TextBlock Grid.Row="2" Text="Select signup journey(s)" />
+            <ListView ItemsSource="{Binding SignUpJourneys}" Grid.Row="2" Grid.Column="2">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" />
+                            <TextBlock Text="{Binding Name}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
         </Grid>
-        <Button Content="OK" Command="{Binding OnOK}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="30" Padding="10"/>
+        <Button Grid.Row="1" Content="OK" Command="{Binding OnOK}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="30" Padding="10"/>
     </Grid>
 </Window>
